@@ -12,6 +12,9 @@ dependencies = []
 [tool.mypy]
 packages = ["src.promptpy"]
 
+[tool.pytest.ini_options]
+addopts = "--cov-report term-missing --cov=promptpy tests/"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -19,4 +22,5 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
 ]
