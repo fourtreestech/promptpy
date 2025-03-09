@@ -17,6 +17,15 @@ packages = ["src.promptpy"]
 [tool.pytest.ini_options]
 addopts = "--cov-report term-missing --cov=promptpy tests/"
 
+[tool.tox]
+requires = ["tox>=4.24"]
+env_list = ["3.13", "3.12", "3.11", "3.10", "3.9"]
+
+[tool.tox.env_run_base]
+description = "Run tests under {base_python}"
+deps = ["pytest>=8", "pytest-cov>=6", "pytest-randomly>=3"]
+commands = [["pytest"]]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -27,4 +36,5 @@ dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
     "pytest-randomly>=3.16.0",
+    "tox>=4.24.2",
 ]
