@@ -2,6 +2,8 @@
 
 **A Python command-line input and validation library.**
 
+![version](https://img.shields.io/badge/version-0.1.0-blue)
+
 **promptpy** prompts for and validates a range of different data types
 on the command line. Out of the box it supports limited character sets,
 integers, floats, dates, yes/no, lists and single-character commands:
