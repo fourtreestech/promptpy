@@ -36,5 +36,7 @@ dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
     "pytest-randomly>=3.16.0",
+    "sphinx>=7.4.7",
+    "sphinx-rtd-theme>=3.0.2",
     "tox>=4.24.2",
 ]
