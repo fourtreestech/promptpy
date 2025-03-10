@@ -1,4 +1,4 @@
-"""Contains the Prompt class which manages command-line input and validation."""
+"""The Prompt class supplies a number of methods which manage command-line input and validation."""
 
 import datetime
 from typing import Callable, Literal, Optional, Union, cast
@@ -279,7 +279,7 @@ class Prompt:
             # Words to exclude [yes, no]:
 
         Words should be separated by a comma, and will
-        be stored without leading or trailing whitespace
+        be stored without leading or trailing whitespace.
 
         :param text: Prompt text
         :type text: str

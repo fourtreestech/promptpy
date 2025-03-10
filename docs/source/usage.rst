@@ -27,6 +27,7 @@ Methods
 :class:`~promptpy.prompt.Prompt` ships with a variety of methods to prompt for
 and validate different types of data:
 
+* :meth:`~promptpy.prompt.Prompt.date` prompt for a date
 * :meth:`~promptpy.prompt.Prompt.float` prompt for a floating point decimal number
 * :meth:`~promptpy.prompt.Prompt.integer` prompt for an integer
 * :meth:`~promptpy.prompt.Prompt.list` prompt for a list of strings, separated by commas

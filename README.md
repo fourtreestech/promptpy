@@ -4,7 +4,7 @@
 
 **promptpy** prompts for and validates a range of different data types
 on the command line. Out of the box it supports limited character sets,
-integers, floats, lists and single-character commands:
+integers, floats, dates, yes/no, lists and single-character commands:
 
     from promptpy import Prompt
     prompt = Prompt()
