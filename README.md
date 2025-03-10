@@ -3,6 +3,8 @@
 **A Python command-line input and validation library.**
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Ffourtreestech%2Fpromptpy%2Fmain%2Fpyproject.toml)
+
 
 **promptpy** prompts for and validates a range of different data types
 on the command line. Out of the box it supports limited character sets,
