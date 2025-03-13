@@ -6,10 +6,8 @@
 import sys
 from pathlib import Path
 
-# Import path for autodoc
+# Add import path for sphinx autodoc
 sys.path.insert(0, str(Path('..', '..', 'src').resolve()))
-print(f"*** CWD: {Path.cwd()} ***")
-print(f"*** PATH: {Path('..', '..', 'src').resolve()} ***")
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
