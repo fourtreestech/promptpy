@@ -28,6 +28,7 @@ classifiers = [
 
 [project.urls]
 Repository = "https://github.com/fourtreestech/promptpy"
+Documentation = "https://promptpy.readthedocs.io/"
 
 [tool.hatch.version]
 path = "src/promptpy/__init__.py"
