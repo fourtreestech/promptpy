@@ -195,23 +195,15 @@ class Prompt:
             else ""
         )
 
-        # Default if one is given
-        if default is not None:
-            suffix = f" [{default}]"
-            accept_empty = True
-        else:
-            suffix = ""
-            accept_empty = False
-
         # Get response
         response = self.prompt(
-            f"{text}{rng}{suffix}",
-            validators=[IntegerValidator(min=min, max=max, accept_empty=accept_empty)],
+            f"{text}{rng}",
+            validators=[IntegerValidator(min=min, max=max, accept_empty=False)],
             commands=commands,
             transform=transform,
+            default="" if default is None else str(default),
         )
-        if len(response) == 0:
-            return default or 0
+
         try:
             return int(response)
         except ValueError:
