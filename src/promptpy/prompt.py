@@ -103,6 +103,7 @@ class Prompt:
         """
         valid = False
         err = ""
+        s = ""
 
         while not valid:
             # Display error message if there is one
@@ -496,7 +497,7 @@ class Prompt:
         :rtype: datetime.date | str
         """
         if default:
-            suffix = escape(f" [{datetime.datetime.strftime(default, format)}]")
+            suffix = escape(f" [{datetime.date.strftime(default, format)}]")
             accept_empty = True
         else:
             suffix = ""

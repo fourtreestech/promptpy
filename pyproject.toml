@@ -39,6 +39,9 @@ packages = ["src.promptpy"]
 [tool.pytest.ini_options]
 addopts = "--cov-report term-missing --cov=promptpy tests/"
 
+[tool.ruff.lint]
+select = ["F", "I"]
+
 [tool.tox]
 requires = ["tox>=4.24"]
 env_list = ["3.13", "3.12", "3.11", "3.10", "3.9"]
