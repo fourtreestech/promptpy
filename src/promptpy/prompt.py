@@ -67,6 +67,7 @@ class Prompt:
         validators: Optional[list[Callable[[str], None]]] = None,
         commands: str = "",
         transform: CaseTransform = "none",
+        default: str = "",
     ) -> str:
         """Display a command line prompt and return the user input.
 
@@ -90,6 +91,9 @@ class Prompt:
             * 'casefold`: applies :py:meth:`str.casefold()`
             * 'none': input string is returned as entered
 
+        If ``default`` is provided and the user input is empty,
+        the value of ``default`` will be returned without any further validation.
+
         :param text: Text prompt to display
         :type text: str
         :param validators: Validators to test user input (default=None)
@@ -98,47 +102,58 @@ class Prompt:
         :type commands: str
         :param transform: Transformation to apply to input before returning (default='none')
         :type transform: str
+        :param default: Value to return if no user input is supplied (default='')
+        :type default: str
         :returns: Validated user input
         :rtype: str
         """
         valid = False
         err = ""
-        s = ""
+        user_input = ""
+        prompt_text = f"{text} [{default}]" if default else text
 
         while not valid:
             # Display error message if there is one
             if err:
                 if "\n" in text:
                     # Multiline display
-                    msg = f"\n[bold red]{err}.[/]\n{text}"
+                    msg = f"\n[bold red]{err}.[/]\n{prompt_text}"
                 else:
                     # Single line display
-                    msg = f"[bold red]{err}.[/] {text}"
+                    msg = f"[bold red]{err}.[/] {prompt_text}"
             else:
                 # No error
-                msg = text
+                msg = prompt_text
 
             # Get input
-            s = self.console.input(f"{msg}: ")
+            user_input = self.console.input(f"{msg}: ")
+
+            # Return default value
+            if default and not user_input:
+                return default
 
             # Validate input and loop round again if invalid
             valid = True
 
             # Check for a single-letter command
-            if commands and len(s) == 1 and s.casefold() in commands.casefold():
+            if (
+                commands
+                and len(user_input) == 1
+                and user_input.casefold() in commands.casefold()
+            ):
                 break
 
             # Run validators
             if validators:
                 for validator in validators:
                     try:
-                        validator(s)
+                        validator(user_input)
                     except ValidationError as e:
                         err = str(e)
                         valid = False
                         break
 
-        return self.transform_text(s, transform)
+        return self.transform_text(user_input, transform)
 
     def integer(
         self,

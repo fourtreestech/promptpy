@@ -100,6 +100,10 @@ class TestPrompt:
         prompt = Prompt(mock_console)
         assert prompt.prompt("Please enter", transform="casefold") == "abcde"
 
+    def test_returns_default(self, mock_console):
+        prompt = Prompt(mock_console)
+        assert prompt.prompt("Please enter", default="x") == "x"
+
 
 class TestOptionsPrompt:
     def test_returns_input(self, mock_console, capsys):
