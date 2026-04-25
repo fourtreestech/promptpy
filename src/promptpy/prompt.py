@@ -31,7 +31,7 @@ class Prompt:
     """
 
     def __init__(self, console: Optional[Console] = None):
-        self.console = console or Console()
+        self.console = console or Console(highlight=False)
 
     @staticmethod
     def transform_text(text: str, transform: CaseTransform) -> str:
