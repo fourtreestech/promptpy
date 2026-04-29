@@ -110,7 +110,8 @@ class Prompt:
         valid = False
         err = ""
         user_input = ""
-        prompt_text = f"{text} [{default}]" if default else text
+
+        prompt_text = " ".join([text, escape(f"[{default}]")]) if default else text
 
         while not valid:
             # Display error message if there is one
@@ -290,9 +291,8 @@ class Prompt:
         :returns: The words entered at the prompt
         :rtype: list[str]
         """
-        suffix = escape(f" [{', '.join(default)}]") if default else ""
         words = self.prompt(
-            f"{text}{suffix}",
+            text,
             transform=transform,
             default="" if default is None else ", ".join(default),
         )
