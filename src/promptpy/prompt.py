@@ -291,12 +291,12 @@ class Prompt:
         :rtype: list[str]
         """
         suffix = escape(f" [{', '.join(default)}]") if default else ""
-        words = self.prompt(f"{text}{suffix}", transform=transform)
-        return (
-            [word.strip() for word in words.split(",") if len(word.strip())]
-            if words
-            else default or []
+        words = self.prompt(
+            f"{text}{suffix}",
+            transform=transform,
+            default="" if default is None else ", ".join(default),
         )
+        return [word.strip() for word in words.split(",") if len(word.strip())]
 
     def yes_no(
         self,
