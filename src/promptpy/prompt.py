@@ -1,7 +1,7 @@
 """The Prompt class supplies a number of methods which manage command-line input and validation."""
 
 import datetime
-from typing import Callable, Literal, Optional, Union, cast
+from typing import Callable, Literal, Optional, Union
 
 from rich.console import Console
 from rich.markup import escape
@@ -432,20 +432,13 @@ class Prompt:
         :returns: Validated user input
         :rtype: str
         """
-        if default:
-            suffix = escape(f" [{default}]")
-            accept_empty = True
-        else:
-            suffix = ""
-            accept_empty = False
-
-        option = self.prompt(
-            f"{text}{suffix}",
-            [ChoiceValidator(choices, accept_empty=accept_empty)],
+        return self.prompt(
+            f"{text}",
+            [ChoiceValidator(choices, accept_empty=False)],
             commands=commands,
             transform=transform,
+            default="" if default is None else self.transform_text(default, transform),
         )
-        return option or self.transform_text(cast(str, default), transform)
 
     def date(
         self,
