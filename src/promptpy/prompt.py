@@ -473,23 +473,15 @@ class Prompt:
         :returns: The date or command entered at the prompt, or the default value if nothing was entered
         :rtype: datetime.date | str
         """
-        if default:
-            suffix = escape(f" [{datetime.date.strftime(default, format)}]")
-            accept_empty = True
-        else:
-            suffix = ""
-
         date = self.prompt(
-            f"{text}{suffix}",
+            f"{text}",
             [DateValidator(format, accept_empty=accept_empty)],
             commands=commands,
             transform=transform,
+            default="" if default is None else datetime.date.strftime(default, format),
         )
 
-        if date:
-            try:
-                return datetime.datetime.strptime(date, format).date()
-            except ValueError:
-                return date
-
-        return default or ""
+        try:
+            return datetime.datetime.strptime(date, format).date()
+        except ValueError:
+            return date
