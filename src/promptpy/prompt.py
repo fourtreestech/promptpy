@@ -322,20 +322,12 @@ class Prompt:
         :returns: The letter entered at the prompt
         :rtype: str
         """
-        if default:
-            suffix = f" [{default.upper()}]"
-            min = 0
-        else:
-            suffix = ""
-            min = 1
-
-        choice = self.prompt(
-            f"{text} (Y/N)?{suffix}",
-            validators=[CharacterValidator(valid="yn"), Length(min=min, max=1)],
+        return self.prompt(
+            f"{text} (Y/N)?",
+            validators=[CharacterValidator(valid="yn"), Length(min=1, max=1)],
             transform=transform,
+            default="" if default is None else self.transform_text(default, transform),
         )
-
-        return choice or self.transform_text(cast(str, default), transform)
 
     def options(
         self,
