@@ -393,20 +393,13 @@ class Prompt:
             [f"[bold]{k.upper()}[/] {v}" for k, v in options.items()]
         )
         letters = "".join(options.keys())
-        if default:
-            suffix = f" [{default.upper()}]"
-            min = 0
-        else:
-            suffix = ""
-            min = 1
 
-        choice = self.prompt(
-            f"{prefix}{option_text}{mid}{suffix}",
-            [CharacterValidator(valid=letters), Length(min=min, max=1)],
+        return self.prompt(
+            f"{prefix}{option_text}{mid}",
+            [CharacterValidator(valid=letters), Length(min=1, max=1)],
             transform=transform,
+            default="" if default is None else self.transform_text(default, transform),
         )
-
-        return choice or self.transform_text(cast(str, default), transform)
 
     def choice(
         self,
