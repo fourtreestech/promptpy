@@ -1,5 +1,6 @@
 [project]
 name = "promptpy"
+version = "0.1.1"
 description = "A Python command line input and validation library"
 readme = "README.md"
 authors = [
@@ -9,7 +10,6 @@ requires-python = ">=3.9"
 dependencies = [
     "rich>=15.0.0",
 ]
-dynamic = ["version"]
 license = "MIT"
 keywords = ["prompt", "cli", "command line interface"]
 classifiers = [
@@ -29,6 +29,32 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/fourtreestech/promptpy"
 Documentation = "https://promptpy.readthedocs.io/"
+
+[tool.bumpver]
+current_version = "0.1.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = false
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'version = "{version}"',
+]
+"README.md" = [
+    'version-{version}-blue',
+]
+"src/promptpy/__init__.py" = [
+    '__version__ = "{version}"'
+]
+"docs/source/conf.py" = [
+    'release = "{version}"'
+]
 
 [tool.hatch.version]
 path = "src/promptpy/__init__.py"
