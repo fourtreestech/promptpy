@@ -1,6 +1,6 @@
 [project]
 name = "promptpy"
-version = "0.1.1"
+version = "0.2.0"
 description = "A Python command line input and validation library"
 readme = "README.md"
 authors = [
@@ -31,7 +31,7 @@ Repository = "https://github.com/fourtreestech/promptpy"
 Documentation = "https://promptpy.readthedocs.io/"
 
 [tool.bumpver]
-current_version = "0.1.0"
+current_version = "0.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
