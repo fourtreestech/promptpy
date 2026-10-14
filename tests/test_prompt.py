@@ -1,5 +1,7 @@
 import datetime
 
+import pytest
+
 from promptpy.prompt import Prompt
 from promptpy.validators import CharacterValidator
 
@@ -298,6 +300,19 @@ class TestIntegerPrompt:
         assert prompt.integer("Pick a number", min=3, max=3) == 3
         assert "(3-3)" not in capsys.readouterr().out
 
+    @pytest.mark.parametrize("default", [0, 11])
+    def test_default_out_of_range_raises_error(self, mock_console, default):
+        prompt = Prompt(mock_console)
+
+        # Out-of-range default is a programming error
+        with pytest.raises(ValueError):
+            prompt.integer("Pick a number", min=1, max=10, default=default)
+
+    def test_default_at_boundary_returned(self, mock_console):
+        prompt = Prompt(mock_console)
+
+        assert prompt.integer("Pick a number", min=1, max=10, default=10) == 10
+
 
 class TestFloatPrompt:
     def test_returns_input(self, mock_console, capsys):
@@ -384,6 +399,19 @@ class TestFloatPrompt:
 
         # Returns command 'q'
         assert prompt.float("Pick a number", max=3.0, commands="q") == "Q"
+
+    @pytest.mark.parametrize("default", [0.5, 2.5])
+    def test_default_out_of_range_raises_error(self, mock_console, default):
+        prompt = Prompt(mock_console)
+
+        # Out-of-range default is a programming error
+        with pytest.raises(ValueError):
+            prompt.float("Pick a number", min=1.0, max=2.0, default=default)
+
+    def test_default_at_boundary_returned(self, mock_console):
+        prompt = Prompt(mock_console)
+
+        assert prompt.float("Pick a number", min=1.0, max=2.0, default=1.0) == 1.0
 
 
 class TestStringListPrompt:

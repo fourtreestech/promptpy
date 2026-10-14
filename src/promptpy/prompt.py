@@ -19,6 +19,17 @@ from .validators import (
 CaseTransform = Literal["upper", "lower", "casefold", "none"]
 
 
+def _check_default_in_range(
+    default: Optional[float], min: Optional[float], max: Optional[float]
+) -> None:
+    """Raise ``ValueError`` if a numeric default is outside ``min``/``max``."""
+    if default is None:
+        return
+
+    if (min is not None and default < min) or (max is not None and default > max):
+        raise ValueError(f"default {default} is outside the range min={min}, max={max}")
+
+
 class Prompt:
     """Call methods of this class to prompt for and validate different
     types of data (characters, integers, etc.).
@@ -188,7 +199,10 @@ class Prompt:
         :type transform: str
         :returns: The integer or command entered at the prompt, or the default value if none was entered
         :rtype: Union[int, str]
+        :raises ValueError: if ``default`` is outside ``min``/``max``
         """
+        _check_default_in_range(default, min, max)
+
         # Number range if one is given
         rng = (
             f" ({min}-{max})"
@@ -249,7 +263,10 @@ class Prompt:
         :type transform: str
         :returns: The float or command entered at the prompt, or the default value if none was entered
         :rtype: Union[float, str]
+        :raises ValueError: if ``default`` is outside ``min``/``max``
         """
+        _check_default_in_range(default, min, max)
+
         # Number range if one is given
         rng = (
             f" ({min}-{max})"
