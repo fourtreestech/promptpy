@@ -413,6 +413,15 @@ class TestStringListPrompt:
         ]
         assert "[word 1, word 2]" in capsys.readouterr().out
 
+    def test_transforms_default(self, mock_console, capsys):
+        prompt = Prompt(mock_console)
+
+        # Default should be transformed like typed input
+        assert prompt.string_list(
+            "Enter words", default=["Yes", "No"], transform="lower"
+        ) == ["yes", "no"]
+        assert "[yes, no]" in capsys.readouterr().out
+
     def test_returns_empty_list(self, mock_console, capsys):
         prompt = Prompt(mock_console)
 

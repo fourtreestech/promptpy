@@ -301,7 +301,9 @@ class Prompt:
         words = self.prompt(
             text,
             transform=transform,
-            default="" if default is None else ", ".join(default),
+            default=""
+            if default is None
+            else self.transform_text(", ".join(default), transform),
         )
         return [word.strip() for word in words.split(",") if len(word.strip())]
 

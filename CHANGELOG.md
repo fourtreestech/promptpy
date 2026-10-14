@@ -8,6 +8,7 @@
 - ``FloatValidator`` (and so ``Prompt.float()``) accepted ``nan`` and ``inf``
 - ``IntegerValidator`` lost precision on integers larger than 2^53, so out-of-range values could pass and very long integers were rejected
 - ``Unique`` wrongly rejected input containing characters such as ``ﬁ`` or ``ß`` whose case-folded form is more than one character
+- ``Prompt.string_list()`` returned the default without applying ``transform``
 
 ## [0.2.0] - 2026-05-02
 
