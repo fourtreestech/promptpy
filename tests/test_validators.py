@@ -211,6 +211,16 @@ class TestUnique:
         with pytest.raises(ValidationError):
             v("aBB")
 
+    @pytest.mark.parametrize("text", ["ﬁ", "ﬃ", "ß", "ﬁf"])
+    def test_multichar_casefold_returns_none(self, text):
+        v = Unique()
+        assert v(text) is None
+
+    def test_casefold_equivalent_chars_raise_error(self):
+        v = Unique()
+        with pytest.raises(ValidationError):
+            v("ßẞ")
+
 
 class TestChoiceValidator:
     def test_returns_none(self):

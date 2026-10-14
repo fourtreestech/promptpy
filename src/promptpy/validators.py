@@ -334,7 +334,7 @@ class Unique:
         :type text: str
         :raises: :exc:`ValidationError` if validation fails
         """
-        c = Counter(text if self.case_sensitive else text.casefold())
+        c = Counter(text if self.case_sensitive else [ch.casefold() for ch in text])
         if len(c) != len(text):
             letter = c.most_common()[0][0]
             raise ValidationError(f"Repeated letter '{letter}'")
