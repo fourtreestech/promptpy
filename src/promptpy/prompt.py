@@ -84,7 +84,7 @@ class Prompt:
 
         The ``validators`` parameter takes an optional list of validators.
         This is any callable that takes a string as its single parameter
-        and raises a :exc:`~clprompt.validators.ValidationError` if the string is invalid
+        and raises a :exc:`~promptpy.validators.ValidationError` if the string is invalid
         according to its validation rules.
 
         If any validation fails the user prompt will be redisplayed,
@@ -299,7 +299,7 @@ class Prompt:
         Presents user with a text prompt and an options default::
 
             prompt = Prompt()
-            prompt.list("Words to exclude", default=["yes", "no")
+            prompt.string_list("Words to exclude", default=["yes", "no"])
             # Prompt is displayed as:
             # Words to exclude [yes, no]:
 
@@ -379,7 +379,7 @@ class Prompt:
             # Prompt is displayed as:
             # Enter S to solve, P to play, Q to quit [S]:
 
-        If the number of options is greater than or equal to``multi_line``
+        If the number of options is greater than or equal to ``multi_line``
         the options will be split across multiple lines::
 
             prompt = Prompt()

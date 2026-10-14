@@ -30,7 +30,7 @@ and validate different types of data:
 * :meth:`~promptpy.prompt.Prompt.date` prompt for a date
 * :meth:`~promptpy.prompt.Prompt.float` prompt for a floating point decimal number
 * :meth:`~promptpy.prompt.Prompt.integer` prompt for an integer
-* :meth:`~promptpy.prompt.Prompt.list` prompt for a list of strings, separated by commas
+* :meth:`~promptpy.prompt.Prompt.string_list` prompt for a list of strings, separated by commas
 * :meth:`~promptpy.prompt.Prompt.options` prompt for one of a set of single-character options
 * :meth:`~promptpy.prompt.Prompt.yes_no` prompt for `yes` or `no`
 
