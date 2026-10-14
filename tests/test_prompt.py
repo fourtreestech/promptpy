@@ -331,6 +331,14 @@ class TestFloatPrompt:
         assert prompt.float("Pick a number") == 3.0
         assert "Not a number" in capsys.readouterr().out
 
+    def test_nan_reprompts(self, mock_console, capsys):
+        mock_console.register(["nan", "1.5"])
+        prompt = Prompt(mock_console)
+
+        # nan is invalid - should reprompt
+        assert prompt.float("Pick a number", min=1, max=2) == 1.5
+        assert "Not a number" in capsys.readouterr().out
+
     def test_too_small_reprompts(self, mock_console, capsys):
         mock_console.register("23")
         prompt = Prompt(mock_console)

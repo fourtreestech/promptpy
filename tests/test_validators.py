@@ -135,6 +135,17 @@ class TestFloatValidator:
         with pytest.raises(ValidationError):
             v("abc")
 
+    @pytest.mark.parametrize("text", ["nan", "NaN", "inf", "-inf", "Infinity"])
+    def test_non_finite_raises_error(self, text):
+        v = FloatValidator()
+        with pytest.raises(ValidationError):
+            v(text)
+
+    def test_nan_with_range_raises_error(self):
+        v = FloatValidator(min=1.0, max=2.0)
+        with pytest.raises(ValidationError):
+            v("nan")
+
 
 class TestLength:
     def test_min_returns_none(self):

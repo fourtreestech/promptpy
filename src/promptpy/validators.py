@@ -5,6 +5,7 @@ and raises a :exc:`~promptpy.validators.ValidationError` if the string is invali
 according to its validation rules.
 """
 
+import math
 from collections import Counter
 from datetime import datetime
 from typing import Optional
@@ -272,6 +273,10 @@ class FloatValidator:
         try:
             f = float(text)
         except ValueError:
+            raise ValidationError("Not a number")
+
+        # Reject nan and inf
+        if not math.isfinite(f):
             raise ValidationError("Not a number")
 
         # Check min/max
