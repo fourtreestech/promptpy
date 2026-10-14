@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Neil Martin", email = "neil@fourtrees.tech" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "rich>=15.0.0",
 ]
@@ -67,7 +67,7 @@ select = ["F", "I"]
 
 [tool.tox]
 requires = ["tox>=4.24"]
-env_list = ["3.13", "3.12", "3.11", "3.10", "3.9"]
+env_list = ["3.13", "3.12"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
