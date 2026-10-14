@@ -10,7 +10,7 @@ promptpy is a small Python (>=3.12) library for command-line input and validatio
 
 - `just test` — run tests (`uv run pytest`). Pytest `addopts` in `pyproject.toml` already enables `--cov=promptpy` with missing-line output and points at `tests/`.
 - Single test: `uv run pytest tests/test_prompt.py::test_name` (or `-k <expr>`).
-- `just check` — `ruff check --fix` + `ruff format` + `ty check` (via `uvx`). Ruff lint rules are only `F` and `I`.
+- `just check` — `ruff check --fix` + `ruff format` + `ty check` (via `uvx`). Ruff lint rules are `F`, `I`, `B`, `C4`, `SIM`, `RUF` and `D` (with `D401`), using the Google pydocstyle convention; `D` is ignored under `tests/` and `docs/`.
 - `just cov` — coverage JSON + badge update (the README advertises 100% coverage; keep it there).
 - `just docs` — Sphinx build with `-W` (warnings are errors); sources in `docs/source/`.
 - `just bump` — bumps the version via bumpver across `pyproject.toml`, `README.md`, `src/promptpy/__init__.py` and `docs/source/conf.py`; don't edit those by hand.
@@ -28,4 +28,4 @@ promptpy is a small Python (>=3.12) library for command-line input and validatio
 
 ## Docs
 
-Sphinx docs (`docs/source/`) are autodoc-driven from the docstrings, which are reST-style (`:param:`, `:type:`, `:returns:`), so keep new public docstrings in that format. Add user-visible changes to `CHANGELOG.md`.
+Sphinx docs (`docs/source/`) are autodoc-driven from the docstrings, which are Google-style (`Args:`, `Returns:`, parsed by `sphinx.ext.napoleon`), so keep new public docstrings in that format. Every public class, method and `__init__` needs a docstring whose first line is a summary ending in punctuation, followed by a blank line (ruff `D` rules). Add user-visible changes to `CHANGELOG.md`.

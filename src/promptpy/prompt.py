@@ -31,8 +31,9 @@ def _check_default_in_range(
 
 
 class Prompt:
-    """Call methods of this class to prompt for and validate different
-    types of data (characters, integers, etc.).
+    """Prompt for and validate different types of data.
+
+    Call methods of this class to prompt for characters, integers, etc.
 
     If you have a Rich Console instance already created, supply
     it to the constructor, otherwise one will be created.
@@ -42,6 +43,7 @@ class Prompt:
     """
 
     def __init__(self, console: Optional[Console] = None):
+        """Initialize the prompt."""
         self.console = console or Console(highlight=False)
 
     @staticmethod
@@ -460,7 +462,7 @@ class Prompt:
         transform: CaseTransform = "upper",
         accept_empty: bool = False,
     ) -> Union[datetime.date, str]:
-        """Prompt for a date
+        """Prompt for a date.
 
         .. code-block::
 

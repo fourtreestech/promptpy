@@ -63,7 +63,14 @@ path = "src/promptpy/__init__.py"
 addopts = "--cov-report term-missing --cov=promptpy tests/"
 
 [tool.ruff.lint]
-select = ["F", "I"]
+select = ["F", "I", "B", "C4", "SIM", "RUF", "D", "D401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+"docs/*" = ["D"]
 
 [tool.tox]
 requires = ["tox>=4.24"]

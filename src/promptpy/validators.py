@@ -58,6 +58,7 @@ class CharacterValidator:
         invalid: Optional[str] = None,
         case_sensitive: bool = False,
     ) -> None:
+        """Initialize the validator."""
         self.valid = valid
         self.invalid = invalid
         self.case_sensitive = case_sensitive
@@ -152,6 +153,7 @@ class IntegerValidator:
         max: Optional[int] = None,
         accept_empty: bool = True,
     ) -> None:
+        """Initialize the validator."""
         self.min = min
         self.max = max
         self.accept_empty = accept_empty
@@ -173,7 +175,7 @@ class IntegerValidator:
             if self.accept_empty:
                 return None
             else:
-                raise ValidationError("Not a number")
+                raise ValidationError("Not a number") from None
 
         # Convert to an int, falling back to a float for input such as '3.0' or '1e3'
         try:
@@ -182,11 +184,11 @@ class IntegerValidator:
             try:
                 f = float(text)
             except ValueError:
-                raise ValidationError("Not a number")
+                raise ValidationError("Not a number") from None
 
             # Is it an int?
             if not f.is_integer():
-                raise ValidationError("Not a whole number")
+                raise ValidationError("Not a whole number") from None
             i = int(f)
 
         # Check min/max
@@ -249,6 +251,7 @@ class FloatValidator:
         max: Optional[float] = None,
         accept_empty: bool = True,
     ) -> None:
+        """Initialize the validator."""
         self.min = min
         self.max = max
         self.accept_empty = accept_empty
@@ -270,17 +273,17 @@ class FloatValidator:
             if self.accept_empty:
                 return None
             else:
-                raise ValidationError("Not a number")
+                raise ValidationError("Not a number") from None
 
         # Convert to a float
         try:
             f = float(text)
         except ValueError:
-            raise ValidationError("Not a number")
+            raise ValidationError("Not a number") from None
 
         # Reject nan and inf
         if not math.isfinite(f):
-            raise ValidationError("Not a number")
+            raise ValidationError("Not a number") from None
 
         # Check min/max
         if self.min is not None and f < self.min:
@@ -319,6 +322,7 @@ class Unique:
     """
 
     def __init__(self, case_sensitive: bool = False) -> None:
+        """Initialize the validator."""
         self.case_sensitive = case_sensitive
 
     def __call__(self, text: str) -> None:
@@ -377,6 +381,7 @@ class Length:
     """
 
     def __init__(self, min: int = 0, max: int = 0, exact: int = 0) -> None:
+        """Initialize the validator."""
         self.min = min
         self.max = max
         self.exact = exact
@@ -452,6 +457,7 @@ class ChoiceValidator:
         case_sensitive: bool = False,
         accept_empty: bool = True,
     ) -> None:
+        """Initialize the validator."""
         self.choices = choices
         self.case_sensitive = case_sensitive
         self.accept_empty = accept_empty
@@ -525,6 +531,7 @@ class DateValidator:
     """
 
     def __init__(self, format: str, accept_empty: bool = True) -> None:
+        """Initialize the validator."""
         self.format = format
         self.accept_empty = accept_empty
 
@@ -545,10 +552,10 @@ class DateValidator:
             if self.accept_empty:
                 return None
             else:
-                raise ValidationError("Not a valid date")
+                raise ValidationError("Not a valid date") from None
 
         # Try parsing the text
         try:
             datetime.strptime(text, self.format)
         except ValueError:
-            raise ValidationError("Not a valid date")
+            raise ValidationError("Not a valid date") from None
