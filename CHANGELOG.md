@@ -11,6 +11,7 @@
 - ``Prompt.string_list()`` returned the default without applying ``transform``
 - ``Prompt.integer()`` and ``Prompt.float()`` returned a ``default`` outside ``min``/``max``; they now raise ``ValueError``
 - ``Prompt.options()`` interpreted option descriptions as Rich markup, so text in square brackets disappeared and ``[/]`` raised ``MarkupError``
+- Package metadata listed Python 3.9–3.11 classifiers although ``requires-python`` is ``>=3.12``
 
 ## [0.2.0] - 2026-05-02
 
