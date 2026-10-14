@@ -46,19 +46,17 @@ class CharacterValidator:
            ...
        promptpy.validators.ValidationError: Invalid character(s)
 
-    :param valid: All characters must be contained in this list (default=None)
-    :type valid: str
-    :param invalid: No character may be contained in this list (default=None)
-    :type invalid: str
-    :param case_sensitive: ``True`` for case_sensitive comparison (default=False)
-    :type case_sensitive: bool
+    Args:
+        valid: All characters must be contained in this list (default=None)
+        invalid: No character may be contained in this list (default=None)
+        case_sensitive: ``True`` for case_sensitive comparison (default=False)
     """
 
     def __init__(
         self,
         valid: Optional[str] = None,
         invalid: Optional[str] = None,
-        case_sensitive=False,
+        case_sensitive: bool = False,
     ) -> None:
         self.valid = valid
         self.invalid = invalid
@@ -70,9 +68,11 @@ class CharacterValidator:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         # Check that all letters are permitted
         if self.valid is not None:
@@ -140,19 +140,17 @@ class IntegerValidator:
            ...
        promptpy.validators.ValidationError: Not a number
 
-    :param min: The value cannot be lower than this (default=None)
-    :type min: int
-    :param max: The value cannot be higher than this (default=None)
-    :type max: int
-    :param accept_empty: Whether the validator should accept the empty string (default=True)
-    :type accept_empty: bool
+    Args:
+        min: The value cannot be lower than this (default=None)
+        max: The value cannot be higher than this (default=None)
+        accept_empty: Whether the validator should accept the empty string (default=True)
     """
 
     def __init__(
         self,
         min: Optional[int] = None,
         max: Optional[int] = None,
-        accept_empty=True,
+        accept_empty: bool = True,
     ) -> None:
         self.min = min
         self.max = max
@@ -164,9 +162,11 @@ class IntegerValidator:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         # Check for empty string
         if not text:
@@ -237,19 +237,17 @@ class FloatValidator:
            ...
        promptpy.validators.ValidationError: Not a number
 
-    :param min: The value cannot be lower than this (default=None)
-    :type min: float
-    :param max: The value cannot be higher than this (default=None)
-    :type max: float
-    :param accept_empty: Whether the validator should accept the empty string (default=True)
-    :type accept_empty: bool
+    Args:
+        min: The value cannot be lower than this (default=None)
+        max: The value cannot be higher than this (default=None)
+        accept_empty: Whether the validator should accept the empty string (default=True)
     """
 
     def __init__(
         self,
         min: Optional[float] = None,
         max: Optional[float] = None,
-        accept_empty=True,
+        accept_empty: bool = True,
     ) -> None:
         self.min = min
         self.max = max
@@ -261,9 +259,11 @@ class FloatValidator:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         # Check for empty string
         if not text:
@@ -314,14 +314,11 @@ class Unique:
        >>> v = Unique(case_sensitive=True)
        >>> v('aBb')
 
-    :param case_sensitive: If ``False`` (the default) the validator will ignore letter case
-                           when comparing letters, so that ``aA`` will fail validation.
-                           If ``True`` ``a`` and ``A`` are considered as different letters
-                           and ``aA`` will pass validation.
-    :type case_sensitive: bool
+    Args:
+        case_sensitive: If ``False`` (the default) the validator will ignore letter case when comparing letters, so that ``aA`` will fail validation. If ``True`` ``a`` and ``A`` are considered as different letters and ``aA`` will pass validation.
     """
 
-    def __init__(self, case_sensitive=False) -> None:
+    def __init__(self, case_sensitive: bool = False) -> None:
         self.case_sensitive = case_sensitive
 
     def __call__(self, text: str) -> None:
@@ -330,9 +327,11 @@ class Unique:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         c = Counter(text if self.case_sensitive else [ch.casefold() for ch in text])
         if len(c) != len(text):
@@ -371,15 +370,13 @@ class Length:
            ...
        promptpy.validators.ValidationError: Text must be 3 characters long
 
-    :param min: The string to validate must contain at least this number of characters
-    :type min: int
-    :param max: The string to validate cannot be longer than this number of characters
-    :type max: int
-    :param exact: The string to validate must contain exactly this number of characters
-    :type exact: int
+    Args:
+        min: The string to validate must contain at least this number of characters
+        max: The string to validate cannot be longer than this number of characters
+        exact: The string to validate must contain exactly this number of characters
     """
 
-    def __init__(self, min=0, max=0, exact=0) -> None:
+    def __init__(self, min: int = 0, max: int = 0, exact: int = 0) -> None:
         self.min = min
         self.max = max
         self.exact = exact
@@ -390,9 +387,11 @@ class Length:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         # Test exact
         if self.exact > 0 and len(text) != self.exact:
@@ -441,16 +440,17 @@ class ChoiceValidator:
            ...
        promptpy.validators.ValidationError: That is not a valid option
 
-    :param choices: The string to validate must be an item in this list
-    :type choices: list[str]
-    :param case_sensitive: If True, the validation will use a case-sensitive comparison (default=False)
-    :type case_sensitive: bool
-    :param accept_empty: Whether the validator should accept the empty string (default=True)
-    :type accept_empty: bool
+    Args:
+        choices: The string to validate must be an item in this list
+        case_sensitive: If True, the validation will use a case-sensitive comparison (default=False)
+        accept_empty: Whether the validator should accept the empty string (default=True)
     """
 
     def __init__(
-        self, choices: list[str], case_sensitive=False, accept_empty=True
+        self,
+        choices: list[str],
+        case_sensitive: bool = False,
+        accept_empty: bool = True,
     ) -> None:
         self.choices = choices
         self.case_sensitive = case_sensitive
@@ -462,9 +462,11 @@ class ChoiceValidator:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         if not text:
             if self.accept_empty:
@@ -517,13 +519,12 @@ class DateValidator:
            ...
        promptpy.validators.ValidationError: Not a valid date
 
-    :param format: The format string used to parse the date
-    :type format: str
-    :param accept_empty: Whether the validator should accept the empty string (default=True)
-    :type accept_empty: bool
+    Args:
+        format: The format string used to parse the date
+        accept_empty: Whether the validator should accept the empty string (default=True)
     """
 
-    def __init__(self, format: str, accept_empty=True) -> None:
+    def __init__(self, format: str, accept_empty: bool = True) -> None:
         self.format = format
         self.accept_empty = accept_empty
 
@@ -533,9 +534,11 @@ class DateValidator:
         Validates according to the rules set on the class instance
         and raises a :exc:`ValidationError` if validation fails.
 
-        :param text: string to validate
-        :type text: str
-        :raises: :exc:`ValidationError` if validation fails
+        Args:
+            text: string to validate
+
+        Raises:
+            ValidationError: if validation fails
         """
         # Check for empty string
         if not text:

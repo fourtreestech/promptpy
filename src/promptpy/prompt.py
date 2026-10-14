@@ -37,8 +37,8 @@ class Prompt:
     If you have a Rich Console instance already created, supply
     it to the constructor, otherwise one will be created.
 
-    :param console: Rich console instance, if one has been created (default=None)
-    :type console: :class:`~rich.console.Console`
+    Args:
+        console: Rich console instance, if one has been created (default=None)
     """
 
     def __init__(self, console: Optional[Console] = None):
@@ -56,10 +56,9 @@ class Prompt:
             * 'casefold`: applies :py:meth:`str.casefold()`
             * 'none': no transformation applied
 
-        :param text: Text to transform
-        :type text: str
-        :param transform: Transformation to apply
-        :type transform: str
+        Args:
+            text: Text to transform
+            transform: Transformation to apply
         """
         if transform == "upper":
             return text.upper()
@@ -105,18 +104,15 @@ class Prompt:
         If ``default`` is provided and the user input is empty,
         the value of ``default`` will be returned without any further validation.
 
-        :param text: Text prompt to display
-        :type text: str
-        :param validators: Validators to test user input (default=None)
-        :type validators: list[Callable[[str], None]]
-        :param commands: String of single-letter commands to accept (default='')
-        :type commands: str
-        :param transform: Transformation to apply to input before returning (default='none')
-        :type transform: str
-        :param default: Value to return if no user input is supplied (default='')
-        :type default: str
-        :returns: Validated user input
-        :rtype: str
+        Args:
+            text: Text prompt to display
+            validators: Validators to test user input (default=None)
+            commands: String of single-letter commands to accept (default='')
+            transform: Transformation to apply to input before returning (default='none')
+            default: Value to return if no user input is supplied (default='')
+
+        Returns:
+            Validated user input
         """
         valid = False
         err = ""
@@ -185,21 +181,19 @@ class Prompt:
            # Prompt is displayed as:
            # Pick a number (1-10) [7]:
 
-        :param text: Prompt text
-        :type text: str
-        :param min: Minimum accepted value (default=None)
-        :type min: int
-        :param max: Maximum accepted value (default=None)
-        :type max: int
-        :param default: Default value (default=None)
-        :type default: int
-        :param commands: String of single-letter commands to accept (default='')
-        :type commands: str
-        :param transform: Transformation to apply to command input before returning (default='upper')
-        :type transform: str
-        :returns: The integer or command entered at the prompt, or the default value if none was entered
-        :rtype: Union[int, str]
-        :raises ValueError: if ``default`` is outside ``min``/``max``
+        Args:
+            text: Prompt text
+            min: Minimum accepted value (default=None)
+            max: Maximum accepted value (default=None)
+            default: Default value (default=None)
+            commands: String of single-letter commands to accept (default='')
+            transform: Transformation to apply to command input before returning (default='upper')
+
+        Returns:
+            The integer or command entered at the prompt, or the default value if none was entered
+
+        Raises:
+            ValueError: if ``default`` is outside ``min``/``max``
         """
         _check_default_in_range(default, min, max)
 
@@ -249,21 +243,19 @@ class Prompt:
            # Prompt is displayed as:
            # Pick a number (1.2-3.5) [2.0]:
 
-        :param text: Prompt text
-        :type text: str
-        :param min: Minimum accepted value (default=None)
-        :type min: float
-        :param max: Maximum accepted value (default=None)
-        :type max: float
-        :param default: Default value (default=None)
-        :type default: float
-        :param commands: String of single-letter commands to accept (default='')
-        :type commands: str
-        :param transform: Transformation to apply to command input before returning (default='upper')
-        :type transform: str
-        :returns: The float or command entered at the prompt, or the default value if none was entered
-        :rtype: Union[float, str]
-        :raises ValueError: if ``default`` is outside ``min``/``max``
+        Args:
+            text: Prompt text
+            min: Minimum accepted value (default=None)
+            max: Maximum accepted value (default=None)
+            default: Default value (default=None)
+            commands: String of single-letter commands to accept (default='')
+            transform: Transformation to apply to command input before returning (default='upper')
+
+        Returns:
+            The float or command entered at the prompt, or the default value if none was entered
+
+        Raises:
+            ValueError: if ``default`` is outside ``min``/``max``
         """
         _check_default_in_range(default, min, max)
 
@@ -306,14 +298,13 @@ class Prompt:
         Words should be separated by a comma, and will
         be stored without leading or trailing whitespace.
 
-        :param text: Prompt text
-        :type text: str
-        :param default: Default option (default=None)
-        :type default: list[str]
-        :param transform: Transformation to apply to input before returning (default='none')
-        :type transform: str
-        :returns: The words entered at the prompt
-        :rtype: list[str]
+        Args:
+            text: Prompt text
+            default: Default option (default=None)
+            transform: Transformation to apply to input before returning (default='none')
+
+        Returns:
+            The words entered at the prompt
         """
         words = self.prompt(
             text,
@@ -339,14 +330,13 @@ class Prompt:
             # Prompt is displayed as:
             # Again (Y/N)? [Y]:
 
-        :param text: Prompt text
-        :type text: str
-        :param default: Default option (default=None)
-        :type default: str
-        :param transform: Transformation to apply to input before returning (default='upper')
-        :type transform: str
-        :returns: The letter entered at the prompt
-        :rtype: str
+        Args:
+            text: Prompt text
+            default: Default option (default=None)
+            transform: Transformation to apply to input before returning (default='upper')
+
+        Returns:
+            The letter entered at the prompt
         """
         return self.prompt(
             f"{text} (Y/N)?",
@@ -395,16 +385,14 @@ class Prompt:
             # Q to quit
             # Enter choice [S]:
 
-        :param options: Options to display
-        :type options: dict[str, str]
-        :param default: Default option (default=None)
-        :type default: str
-        :param transform: Transformation to apply to input before returning (default='upper')
-        :type transform: str
-        :param multi_line: Lowest number of options to split across multiple lines (default=5)
-        :type multi_line: int
-        :returns: Selected option, or default option if none is selected
-        :rtype: str
+        Args:
+            options: Options to display
+            default: Default option (default=None)
+            transform: Transformation to apply to input before returning (default='upper')
+            multi_line: Lowest number of options to split across multiple lines (default=5)
+
+        Returns:
+            Selected option, or default option if none is selected
         """
         if len(options) >= multi_line:
             prefix = ""
@@ -445,18 +433,15 @@ class Prompt:
             # Prompt is displayed as:
             # Please choose your breakfast [ham]:
 
-        :param text: Text prompt to display
-        :type text: str
-        :param choices: List of available choices
-        :type choices: list[str]
-        :param default: Default option (default=None)
-        :type default: str
-        :param commands: String of single-letter commands to accept (default='')
-        :type commands: str
-        :param transform: Transformation to apply to input before returning (default='none')
-        :type transform: str
-        :returns: Validated user input
-        :rtype: str
+        Args:
+            text: Text prompt to display
+            choices: List of available choices
+            default: Default option (default=None)
+            commands: String of single-letter commands to accept (default='')
+            transform: Transformation to apply to input before returning (default='none')
+
+        Returns:
+            Validated user input
         """
         return self.prompt(
             f"{text}",
@@ -484,20 +469,16 @@ class Prompt:
            # Prompt is displayed as:
            # Enter a date (dd/mm/yyyy) [01/01/2024]:
 
-        :param text: Prompt text
-        :type text: str
-        :param format: Date format as per :meth:`~datetime.datetime.strptime`
-        :type format: str
-        :param default: Default value (default=None)
-        :type default: :class:`datetime.date`
-        :param commands: String of single-letter commands to accept (default='')
-        :type commands: str
-        :param transform: Transformation to apply to command input before returning (default='upper')
-        :type transform: str
-        :param accept_empty: Accept the empty string as a return value (default=False)
-        :type accept_empty: bool
-        :returns: The date or command entered at the prompt, or the default value if nothing was entered
-        :rtype: datetime.date | str
+        Args:
+            text: Prompt text
+            format: Date format as per :meth:`~datetime.datetime.strptime`
+            default: Default value (default=None)
+            commands: String of single-letter commands to accept (default='')
+            transform: Transformation to apply to command input before returning (default='upper')
+            accept_empty: Accept the empty string as a return value (default=False)
+
+        Returns:
+            The date or command entered at the prompt, or the default value if nothing was entered
         """
         date = self.prompt(
             f"{text}",

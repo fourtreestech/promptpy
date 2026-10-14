@@ -67,9 +67,11 @@ and prompt that will only accept prime numbers::
             Validates that the string represents a prime number
             and raises a :exc:`ValidationError` if it doesn't.
 
-            :param text: string to validate
-            :type text: str
-            :raises: :exc:`ValidationError` if validation fails
+            Args:
+                text (str): string to validate
+
+            Raises:
+                ValidationError: if validation fails
             """
             # Check this is an integer 2 or greater
             super().__call__(text)

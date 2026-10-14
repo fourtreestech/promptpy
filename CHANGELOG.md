@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Docstrings converted from reST field lists to Google style (rendered via ``sphinx.ext.napoleon``)
+
 ### Fixed
 
 - ``Prompt.integer()`` returned a string instead of an int for input such as ``3.0`` or ``1e3``
