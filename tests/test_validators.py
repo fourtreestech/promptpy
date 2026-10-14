@@ -94,6 +94,17 @@ class TestIntegerValidator:
             v("1.3")
 
 
+class TestIntegerValidatorPrecision:
+    def test_large_int_above_max_raises_error(self):
+        v = IntegerValidator(max=12345678901234567890)
+        with pytest.raises(ValidationError):
+            v("12345678901234567891")
+
+    def test_very_long_int_returns_none(self):
+        v = IntegerValidator()
+        assert v("9" * 400) is None
+
+
 class TestFloatValidator:
     def test_validator_returns_none(self):
         v = FloatValidator()

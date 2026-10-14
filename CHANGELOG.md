@@ -6,6 +6,7 @@
 
 - ``Prompt.integer()`` returned a string instead of an int for input such as ``3.0`` or ``1e3``
 - ``FloatValidator`` (and so ``Prompt.float()``) accepted ``nan`` and ``inf``
+- ``IntegerValidator`` lost precision on integers larger than 2^53, so out-of-range values could pass and very long integers were rejected
 
 ## [0.2.0] - 2026-05-02
 

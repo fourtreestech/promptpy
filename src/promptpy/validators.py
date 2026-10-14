@@ -175,18 +175,21 @@ class IntegerValidator:
             else:
                 raise ValidationError("Not a number")
 
-        # Convert to a float
+        # Convert to an int, falling back to a float for input such as '3.0' or '1e3'
         try:
-            f = float(text)
+            i = int(text)
         except ValueError:
-            raise ValidationError("Not a number")
+            try:
+                f = float(text)
+            except ValueError:
+                raise ValidationError("Not a number")
 
-        # Is it an int?
-        if not f.is_integer():
-            raise ValidationError("Not a whole number")
+            # Is it an int?
+            if not f.is_integer():
+                raise ValidationError("Not a whole number")
+            i = int(f)
 
         # Check min/max
-        i = int(f)
         if self.min is not None and i < self.min:
             raise ValidationError(f"Number should be {self.min} or greater")
         if self.max is not None and i > self.max:

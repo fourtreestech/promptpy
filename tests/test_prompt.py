@@ -283,6 +283,13 @@ class TestIntegerPrompt:
         assert result == 1000
         assert isinstance(result, int)
 
+    def test_large_int_returned_exactly(self, mock_console, capsys):
+        mock_console.register(["12345678901234567891"])
+        prompt = Prompt(mock_console)
+
+        # Large ints should not lose precision
+        assert prompt.integer("Pick a number") == 12345678901234567891
+
     def test_doesnt_display_zero_range(self, mock_console, capsys):
         mock_console.register("3")
         prompt = Prompt(mock_console)
