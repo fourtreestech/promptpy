@@ -56,6 +56,9 @@ push = false
     'release = "{version}"'
 ]
 
+[tool.cov-badge]
+percent_path = ["totals", "percent_covered_display"]
+
 [tool.hatch.version]
 path = "src/promptpy/__init__.py"
 
@@ -80,6 +83,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "cov-badge>=0.1.1",
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
     "pytest-randomly>=3.16.0",
