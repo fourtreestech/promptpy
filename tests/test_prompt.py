@@ -164,6 +164,22 @@ class TestOptionsPrompt:
         assert prompt.options({"s": "solve", "p": "play"}, multi_line=2) == "S"
         assert "\nP" in capsys.readouterr().out
 
+    def test_escapes_markup_in_description(self, mock_console, capsys):
+        mock_console.register("q")
+        prompt = Prompt(mock_console)
+
+        # Square brackets in descriptions are shown literally
+        assert prompt.options({"s": "solve", "q": "quit [no save]"}) == "Q"
+        assert "Q quit [no save]" in capsys.readouterr().out
+
+    def test_closing_tag_in_description(self, mock_console, capsys):
+        mock_console.register("s")
+        prompt = Prompt(mock_console)
+
+        # A stray closing tag must not raise MarkupError
+        assert prompt.options({"s": "solve [/]", "p": "play"}) == "S"
+        assert "solve [/]" in capsys.readouterr().out
+
 
 class TestYesNoPrompt:
     def test_returns_input(self, mock_console, capsys):

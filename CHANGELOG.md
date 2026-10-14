@@ -10,6 +10,7 @@
 - ``Unique`` wrongly rejected input containing characters such as ``ﬁ`` or ``ß`` whose case-folded form is more than one character
 - ``Prompt.string_list()`` returned the default without applying ``transform``
 - ``Prompt.integer()`` and ``Prompt.float()`` returned a ``default`` outside ``min``/``max``; they now raise ``ValueError``
+- ``Prompt.options()`` interpreted option descriptions as Rich markup, so text in square brackets disappeared and ``[/]`` raised ``MarkupError``
 
 ## [0.2.0] - 2026-05-02
 

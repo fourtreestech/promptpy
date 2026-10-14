@@ -416,7 +416,7 @@ class Prompt:
             mid = ""
 
         option_text = sep.join(
-            [f"[bold]{k.upper()}[/] {v}" for k, v in options.items()]
+            [f"[bold]{escape(k.upper())}[/] {escape(v)}" for k, v in options.items()]
         )
         letters = "".join(options.keys())
 
