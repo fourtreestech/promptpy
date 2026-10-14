@@ -19,3 +19,5 @@ wheels/
 docs/make.bat
 docs/Makefile
 
+# PYPI token
+.pypi.token
