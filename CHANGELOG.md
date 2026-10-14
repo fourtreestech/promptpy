@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- ``Prompt.integer()`` returned a string instead of an int for input such as ``3.0`` or ``1e3``
+
 ## [0.2.0] - 2026-05-02
 
 ### Changed

@@ -208,6 +208,13 @@ class Prompt:
         try:
             return int(response)
         except ValueError:
+            pass
+
+        # Whole-number floats such as '3.0' or '1E3' pass IntegerValidator
+        try:
+            return int(float(response))
+        except ValueError:
+            # Command
             return response
 
     def float(

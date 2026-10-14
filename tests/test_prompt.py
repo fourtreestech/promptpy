@@ -265,6 +265,24 @@ class TestIntegerPrompt:
         assert prompt.integer("Pick a number", min=1, max=5) == 3
         assert "(1-5)" in capsys.readouterr().out
 
+    def test_whole_number_float_returns_int(self, mock_console, capsys):
+        mock_console.register(["3.0"])
+        prompt = Prompt(mock_console)
+
+        # Validator accepts '3.0' - should be returned as an int
+        result = prompt.integer("Pick a number")
+        assert result == 3
+        assert isinstance(result, int)
+
+    def test_exponent_returns_int(self, mock_console, capsys):
+        mock_console.register(["1e3"])
+        prompt = Prompt(mock_console)
+
+        # Validator accepts '1e3' - should be returned as an int
+        result = prompt.integer("Pick a number", max=5000)
+        assert result == 1000
+        assert isinstance(result, int)
+
     def test_doesnt_display_zero_range(self, mock_console, capsys):
         mock_console.register("3")
         prompt = Prompt(mock_console)
