@@ -21,6 +21,7 @@ classifiers = [
   "Typing :: Typed",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 
 [project.urls]
@@ -75,7 +76,7 @@ convention = "google"
 
 [tool.tox]
 requires = ["tox>=4.24"]
-env_list = ["3.13", "3.12"]
+env_list = ["3.14", "3.13", "3.12"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
