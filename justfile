@@ -23,6 +23,12 @@ cov:
 docs:
     uv run --group docs sphinx-build -W --keep-going -b html docs/source docs/build/html
 
+# Upgrade dependencies
+upgrade:
+    uv lock --upgrade
+    uv sync
+    uv run tox
+
 # Bump patch version
 bump:
     uvx bumpver update --patch
