@@ -2,7 +2,31 @@
 
 A validator is a callable that takes a string as its single parameter
 and raises a :exc:`~promptpy.validators.ValidationError` if the string is invalid
-according to its validation rules.
+according to its validation rules. It returns ``None`` if the string is valid.
+
+Pass a list of validators to :meth:`promptpy.prompt.Prompt.prompt`. They are run in
+order, and the user is re-prompted after the first one that fails. The message of
+the :exc:`ValidationError` is shown to the user in red followed by a full stop,
+so it should be short and should not end with punctuation.
+
+Any callable will do, so a plain function can be used as a validator:
+
+.. code-block:: python
+
+   from promptpy import Prompt
+   from promptpy.validators import ValidationError
+
+   def not_blank(text: str) -> None:
+       if not text.strip():
+           raise ValidationError("Please enter some text")
+
+   name = Prompt().prompt("Name", validators=[not_blank])
+
+The built-in validators below are classes which are configured when
+constructed and then called with the string to validate. Most accept the
+empty string by default (``accept_empty=True``), leaving the decision on whether
+a value is required to the :class:`~promptpy.prompt.Prompt` method;
+pass ``accept_empty=False`` to reject it.
 """
 
 import math
@@ -46,10 +70,13 @@ class CharacterValidator:
            ...
        promptpy.validators.ValidationError: Invalid character(s)
 
+    Both ``valid`` and ``invalid`` may be given, in which case both rules
+    apply. The empty string is always accepted.
+
     Args:
-        valid: All characters must be contained in this list (default=None)
-        invalid: No character may be contained in this list (default=None)
-        case_sensitive: ``True`` for case_sensitive comparison (default=False)
+        valid: String of the only characters allowed in the text (default=None)
+        invalid: String of characters which may not appear in the text (default=None)
+        case_sensitive: ``True`` for case-sensitive comparison (default=False)
     """
 
     def __init__(
@@ -117,6 +144,11 @@ class IntegerValidator:
        Traceback (most recent call last):
            ...
        promptpy.validators.ValidationError: Not a whole number
+
+       Whole numbers written as floats are accepted:
+
+       >>> v('3.0')
+       >>> v('1e3')
 
        >>> v = IntegerValidator(min=3)
        >>> v('3')
@@ -212,6 +244,13 @@ class FloatValidator:
        >>> v('3')
        >>> v('3.2')
        >>> v('xyz')
+       Traceback (most recent call last):
+           ...
+       promptpy.validators.ValidationError: Not a number
+
+       ``nan`` and ``inf`` are not accepted:
+
+       >>> v('nan')
        Traceback (most recent call last):
            ...
        promptpy.validators.ValidationError: Not a number
@@ -317,8 +356,13 @@ class Unique:
        >>> v = Unique(case_sensitive=True)
        >>> v('aBb')
 
+    Every character is checked, not just letters.
+
     Args:
-        case_sensitive: If ``False`` (the default) the validator will ignore letter case when comparing letters, so that ``aA`` will fail validation. If ``True`` ``a`` and ``A`` are considered as different letters and ``aA`` will pass validation.
+        case_sensitive: If ``False`` (the default) letter case is ignored
+            when comparing characters, so that ``aA`` fails validation.
+            If ``True``, ``a`` and ``A`` are considered different
+            and ``aA`` passes validation.
     """
 
     def __init__(self, case_sensitive: bool = False) -> None:
@@ -374,10 +418,13 @@ class Length:
            ...
        promptpy.validators.ValidationError: Text must be 3 characters long
 
+    A value of ``0`` for any argument means that the check is not applied.
+    If ``exact`` is given it is checked first.
+
     Args:
-        min: The string to validate must contain at least this number of characters
-        max: The string to validate cannot be longer than this number of characters
-        exact: The string to validate must contain exactly this number of characters
+        min: The string to validate must contain at least this number of characters (default=0)
+        max: The string to validate cannot be longer than this number of characters (default=0)
+        exact: The string to validate must contain exactly this number of characters (default=0)
     """
 
     def __init__(self, min: int = 0, max: int = 0, exact: int = 0) -> None:

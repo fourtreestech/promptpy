@@ -5,6 +5,7 @@
 ### Changed
 
 - Docstrings converted from reST field lists to Google style (rendered via ``sphinx.ext.napoleon``)
+- Documentation expanded: the usage guide now covers defaults, commands, case transforms, Rich markup and custom validators, and docstrings describe return types, validator edge cases and the ``choice``/``date`` prompt text
 
 ### Fixed
 
@@ -15,6 +16,7 @@
 - ``Prompt.string_list()`` returned the default without applying ``transform``
 - ``Prompt.integer()`` and ``Prompt.float()`` returned a ``default`` outside ``min``/``max``; they now raise ``ValueError``
 - ``Prompt.options()`` interpreted option descriptions as Rich markup, so text in square brackets disappeared and ``[/]`` raised ``MarkupError``
+- The custom validator example in the usage guide raised ``ValueError`` for input such as ``7.0`` or an empty string
 - Package metadata listed Python 3.9–3.11 classifiers although ``requires-python`` is ``>=3.12``
 
 ## [0.2.0] - 2026-05-02

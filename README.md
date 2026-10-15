@@ -8,7 +8,7 @@
 
 **promptpy** prompts for and validates a range of different data types
 on the command line. Out of the box it supports limited character sets,
-integers, floats, dates, yes/no, lists and single-character commands:
+integers, floats, dates, yes/no, choices, lists and single-character commands:
 
     from promptpy import Prompt
 
@@ -26,6 +26,8 @@ custom validators.
 For more detail see the [documentation](https://promptpy.readthedocs.io/).
 
 ## Installation
+
+Requires Python 3.12 or later.
 
     (.venv) $ pip install promptpy
 
@@ -63,6 +65,20 @@ For more detail see the [documentation](https://promptpy.readthedocs.io/).
     date = prompt.date('Enter a date (dd/mm/yyyy)', '%d/%m/%Y', default=datetime.date(2024, 1, 1))
     # Prompt is displayed as:
     # Enter a date (dd/mm/yyyy) [01/01/2024]:
+
+### Commands
+
+Single-letter commands are accepted in place of the main input and returned
+as upper-case strings, so check the type of the result:
+
+    from promptpy import Prompt
+
+    prompt = Prompt()
+    value = prompt.integer("Pick a number", min=1, max=10, commands="q")
+    # Prompt is displayed as:
+    # Pick a number (1-10):
+    if value == "Q":
+        print("Goodbye")
 
 See the [Usage](https://promptpy.readthedocs.io/en/latest/usage.html) section
 of the documentation for a full list of methods, or the

@@ -1,4 +1,22 @@
-"""The Prompt class supplies a number of methods which manage command-line input and validation."""
+"""The :class:`Prompt` class manages command-line input and validation.
+
+:meth:`Prompt.prompt` is the core method. It displays a prompt, reads a line of
+input and runs it through a list of validators (see :mod:`promptpy.validators`),
+redisplaying the prompt with an error message until the input is valid.
+
+The typed helpers :meth:`~Prompt.integer`, :meth:`~Prompt.float`,
+:meth:`~Prompt.string_list`, :meth:`~Prompt.yes_no`, :meth:`~Prompt.options`,
+:meth:`~Prompt.choice` and :meth:`~Prompt.date` build on it, supplying the
+appropriate validators and converting the result to the right type.
+
+Three concepts are shared by all of the methods:
+
+* **default**: returned if the user just presses Enter, and shown in the prompt
+  as ``[default]``.
+* **commands**: single letters (e.g. ``q`` to quit) which are accepted without
+  being validated as the main input type.
+* **transform**: a case transformation applied to the returned text.
+"""
 
 import datetime
 from typing import Callable, Literal, Optional, Union
@@ -16,6 +34,8 @@ from .validators import (
     ValidationError,
 )
 
+#: Case transformation to apply to text: ``'upper'``, ``'lower'``, ``'casefold'``
+#: (see :meth:`str.casefold`) or ``'none'`` for no change.
 CaseTransform = Literal["upper", "lower", "casefold", "none"]
 
 
@@ -33,17 +53,33 @@ def _check_default_in_range(
 class Prompt:
     """Prompt for and validate different types of data.
 
-    Call methods of this class to prompt for characters, integers, etc.
+    Call methods of this class to prompt for integers, floats, dates,
+    yes/no answers, choices and so on. Each method re-prompts until the
+    input is valid.
 
     If you have a Rich Console instance already created, supply
-    it to the constructor, otherwise one will be created.
+    it to the constructor, otherwise one will be created
+    (with ``highlight=False``, so that prompt text is not automatically
+    colorized).
+
+    .. code-block:: python
+
+       from rich.console import Console
+       from promptpy import Prompt
+
+       prompt = Prompt(Console(width=60))
+       age = prompt.integer("Age", min=0, max=120)
 
     Args:
         console: Rich console instance, if one has been created (default=None)
     """
 
     def __init__(self, console: Optional[Console] = None):
-        """Initialize the prompt."""
+        """Initialize the prompt.
+
+        Args:
+            console: Rich console instance, if one has been created (default=None)
+        """
         self.console = console or Console(highlight=False)
 
     @staticmethod
@@ -53,14 +89,17 @@ class Prompt:
         The ``transform`` parameter indicates how the text should
         be transformed. It can be one of:
 
-            * 'upper': converted to upper case
-            * 'lower': converted to lower case
-            * 'casefold`: applies :py:meth:`str.casefold()`
-            * 'none': no transformation applied
+            * ``'upper'``: converted to upper case
+            * ``'lower'``: converted to lower case
+            * ``'casefold'``: applies :meth:`str.casefold`
+            * ``'none'``: no transformation applied
 
         Args:
             text: Text to transform
             transform: Transformation to apply
+
+        Returns:
+            The transformed text
         """
         if transform == "upper":
             return text.upper()
@@ -83,28 +122,45 @@ class Prompt:
     ) -> str:
         """Display a command line prompt and return the user input.
 
+        .. code-block:: python
+
+           prompt = Prompt()
+           name = prompt.prompt("Name", validators=[Length(min=2)], default="Bob")
+           # Prompt is displayed as:
+           # Name [Bob]:
+
+        A colon and space are appended to ``text`` automatically.
+        ``text`` is interpreted as `Rich markup
+        <https://rich.readthedocs.io/en/stable/markup.html>`_, so literal square
+        brackets must be escaped with :func:`rich.markup.escape`.
+
         The ``validators`` parameter takes an optional list of validators.
         This is any callable that takes a string as its single parameter
         and raises a :exc:`~promptpy.validators.ValidationError` if the string is invalid
-        according to its validation rules.
+        according to its validation rules. Validators are run in order and
+        checking stops at the first failure. With no validators any input,
+        including an empty string, is accepted.
 
         If any validation fails the user prompt will be redisplayed,
-        preceded by the validation error message.
+        preceded by the validation error message in bold red and followed by a full stop
+        (so error messages should not end with one). If ``text`` contains a newline
+        the message is shown on its own line above the prompt.
 
         ``prompt`` accepts an optional string of case-insensitive single-letter commands.
         If any one of these characters is entered at the prompt
-        it will be returned without any further validation being undertaken.
+        it will be returned (after ``transform`` is applied) without any validators being run.
 
         The ``transform`` parameter indicates how the input string should
         be transformed before returning. It can be one of:
 
-            * 'upper': converted to upper case
-            * 'lower': converted to lower case
-            * 'casefold`: applies :py:meth:`str.casefold()`
-            * 'none': input string is returned as entered
+            * ``'upper'``: converted to upper case
+            * ``'lower'``: converted to lower case
+            * ``'casefold'``: applies :meth:`str.casefold`
+            * ``'none'``: input string is returned as entered
 
-        If ``default`` is provided and the user input is empty,
-        the value of ``default`` will be returned without any further validation.
+        If ``default`` is provided it is displayed in square brackets after the
+        prompt text. If the user input is empty, ``default`` is returned
+        exactly as given, without being validated or transformed.
 
         Args:
             text: Text prompt to display
@@ -114,7 +170,7 @@ class Prompt:
             default: Value to return if no user input is supplied (default='')
 
         Returns:
-            Validated user input
+            Validated user input, a command, or the default value
         """
         valid = False
         err = ""
@@ -183,6 +239,21 @@ class Prompt:
            # Prompt is displayed as:
            # Pick a number (1-10) [7]:
 
+        The range is only displayed if both ``min`` and ``max`` are given
+        and ``max`` is greater than ``min``. Whole-number input such as
+        ``3.0`` or ``1e3`` is accepted and returned as an ``int``.
+        An empty input re-prompts unless a ``default`` is given.
+
+        If ``commands`` is given, any of those single letters is accepted and
+        returned as a string (transformed by ``transform``, upper case by
+        default), so check the type of the result:
+
+        .. code-block:: python
+
+           value = prompt.integer('Pick a number', commands='q')
+           if value == 'Q':
+               ...  # user chose to quit
+
         Args:
             text: Prompt text
             min: Minimum accepted value (default=None)
@@ -245,6 +316,14 @@ class Prompt:
            # Prompt is displayed as:
            # Pick a number (1.2-3.5) [2.0]:
 
+        The range is only displayed if both ``min`` and ``max`` are given
+        and ``max`` is greater than ``min``. ``nan`` and ``inf`` are rejected.
+        An empty input re-prompts unless a ``default`` is given.
+
+        If ``commands`` is given, any of those single letters is accepted and
+        returned as a string (transformed by ``transform``, upper case by
+        default), so check the type of the result.
+
         Args:
             text: Prompt text
             min: Minimum accepted value (default=None)
@@ -290,7 +369,7 @@ class Prompt:
     ) -> list[str]:
         """Prompt for a list of strings.
 
-        Presents user with a text prompt and an options default::
+        Presents user with a text prompt and an optional default::
 
             prompt = Prompt()
             prompt.string_list("Words to exclude", default=["yes", "no"])
@@ -298,11 +377,12 @@ class Prompt:
             # Words to exclude [yes, no]:
 
         Words should be separated by a comma, and will
-        be stored without leading or trailing whitespace.
+        be stored without leading or trailing whitespace. Empty items are
+        dropped, so entering nothing (with no default) returns an empty list.
 
         Args:
             text: Prompt text
-            default: Default option (default=None)
+            default: Default words (default=None)
             transform: Transformation to apply to input before returning (default='none')
 
         Returns:
@@ -332,13 +412,16 @@ class Prompt:
             # Prompt is displayed as:
             # Again (Y/N)? [Y]:
 
+        Input is case-insensitive. With the default ``transform`` the
+        result is ``'Y'`` or ``'N'``.
+
         Args:
             text: Prompt text
-            default: Default option (default=None)
+            default: Default option, ``'y'`` or ``'n'`` (default=None)
             transform: Transformation to apply to input before returning (default='upper')
 
         Returns:
-            The letter entered at the prompt
+            The letter entered at the prompt, or the default if none was entered
         """
         return self.prompt(
             f"{text} (Y/N)?",
@@ -358,8 +441,9 @@ class Prompt:
 
         Options are provided as a ``dict`` where the key is the
         character to enter to select the option and the value
-        is a description of that option. The function creates
-        a prompt to present the options to the user::
+        is a description of that option. Keys must be single characters
+        and are displayed in upper case; input is case-insensitive.
+        The function creates a prompt to present the options to the user::
 
             prompt = Prompt()
             options = {
@@ -388,13 +472,13 @@ class Prompt:
             # Enter choice [S]:
 
         Args:
-            options: Options to display
-            default: Default option (default=None)
+            options: Options to display, mapping the key to enter to its description
+            default: Key of the default option (default=None)
             transform: Transformation to apply to input before returning (default='upper')
             multi_line: Lowest number of options to split across multiple lines (default=5)
 
         Returns:
-            Selected option, or default option if none is selected
+            Key of the selected option, or of the default option if none is selected
         """
         if len(options) >= multi_line:
             prefix = ""
@@ -431,9 +515,16 @@ class Prompt:
 
             prompt = Prompt()
             choices = ["ham", "eggs", "spam"]
-            choice = prompt.choice("Please choose your breakfast", choices, default="ham")
+            choice = prompt.choice(
+                "Please choose your breakfast (ham, eggs, spam)", choices, default="ham"
+            )
             # Prompt is displayed as:
-            # Please choose your breakfast [ham]:
+            # Please choose your breakfast (ham, eggs, spam) [ham]:
+
+        The available choices are not displayed automatically, so list them in
+        ``text``. Matching is case-insensitive, and the input is returned as
+        typed (``'HAM'`` is returned as ``'HAM'``) unless a ``transform`` such as
+        ``'lower'`` is given.
 
         Args:
             text: Text prompt to display
@@ -443,7 +534,7 @@ class Prompt:
             transform: Transformation to apply to input before returning (default='none')
 
         Returns:
-            Validated user input
+            The choice or command entered at the prompt, or the default if none was entered
         """
         return self.prompt(
             f"{text}",
@@ -471,6 +562,13 @@ class Prompt:
            # Prompt is displayed as:
            # Enter a date (dd/mm/yyyy) [01/01/2024]:
 
+        The expected format is not displayed automatically, so describe it in
+        ``text``. The default is shown formatted with ``format``.
+
+        Normally an empty input re-prompts. If ``accept_empty`` is true an empty
+        input is accepted and returned as the empty string ``''`` rather than a
+        date, as are any commands, so check the type of the result.
+
         Args:
             text: Prompt text
             format: Date format as per :meth:`~datetime.datetime.strptime`
@@ -480,7 +578,8 @@ class Prompt:
             accept_empty: Accept the empty string as a return value (default=False)
 
         Returns:
-            The date or command entered at the prompt, or the default value if nothing was entered
+            The date or command entered at the prompt, the default value if nothing was entered,
+            or ``''`` if nothing was entered and ``accept_empty`` is true
         """
         date = self.prompt(
             f"{text}",
