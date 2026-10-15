@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from promptpy.prompt import Prompt
-from promptpy.validators import CharacterValidator
+from promptpy.validators import CharacterValidator, IntegerValidator
 
 
 def test_mock_console(mock_console):
@@ -105,6 +105,18 @@ class TestPrompt:
     def test_returns_default(self, mock_console):
         prompt = Prompt(mock_console)
         assert prompt.prompt("Please enter", default="x") == "x"
+
+    def test_transforms_default(self, mock_console, capsys):
+        prompt = Prompt(mock_console)
+        assert prompt.prompt("Please enter", default="AbC", transform="lower") == "abc"
+        assert "[abc]" in capsys.readouterr().out
+
+    def test_default_not_validated(self, mock_console):
+        prompt = Prompt(mock_console)
+        result = prompt.prompt(
+            "Please enter", [IntegerValidator(accept_empty=False)], default="x"
+        )
+        assert result == "x"
 
 
 class TestOptionsPrompt:

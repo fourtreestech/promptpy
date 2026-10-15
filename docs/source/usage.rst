@@ -115,7 +115,8 @@ etc.) keep prompting until they get valid input.
 raise :exc:`ValueError` if the default is outside ``min`` and ``max``.
 
 With the core :meth:`~promptpy.prompt.Prompt.prompt` method the default is
-returned exactly as you give it, without being validated or transformed.
+not validated, but ``transform`` is applied to it, just as it is to typed
+input and commands.
 
 .. _usage-commands:
 

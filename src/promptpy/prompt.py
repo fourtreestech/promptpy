@@ -160,7 +160,7 @@ class Prompt:
 
         If ``default`` is provided it is displayed in square brackets after the
         prompt text. If the user input is empty, ``default`` is returned
-        exactly as given, without being validated or transformed.
+        (and displayed) after ``transform`` is applied, but without being validated.
 
         Args:
             text: Text prompt to display
@@ -176,6 +176,7 @@ class Prompt:
         err = ""
         user_input = ""
 
+        default = self.transform_text(default, transform)
         prompt_text = " ".join([text, escape(f"[{default}]")]) if default else text
 
         while not valid:
@@ -391,9 +392,7 @@ class Prompt:
         words = self.prompt(
             text,
             transform=transform,
-            default=""
-            if default is None
-            else self.transform_text(", ".join(default), transform),
+            default="" if default is None else ", ".join(default),
         )
         return [word.strip() for word in words.split(",") if len(word.strip())]
 
@@ -427,7 +426,7 @@ class Prompt:
             f"{text} (Y/N)?",
             validators=[CharacterValidator(valid="yn"), Length(min=1, max=1)],
             transform=transform,
-            default="" if default is None else self.transform_text(default, transform),
+            default="" if default is None else default,
         )
 
     def options(
@@ -498,7 +497,7 @@ class Prompt:
             f"{prefix}{option_text}{mid}",
             [CharacterValidator(valid=letters), Length(min=1, max=1)],
             transform=transform,
-            default="" if default is None else self.transform_text(default, transform),
+            default="" if default is None else default,
         )
 
     def choice(
@@ -541,7 +540,7 @@ class Prompt:
             [ChoiceValidator(choices, accept_empty=False)],
             commands=commands,
             transform=transform,
-            default="" if default is None else self.transform_text(default, transform),
+            default="" if default is None else default,
         )
 
     def date(

@@ -13,6 +13,7 @@
 - ``FloatValidator`` (and so ``Prompt.float()``) accepted ``nan`` and ``inf``
 - ``IntegerValidator`` lost precision on integers larger than 2^53, so out-of-range values could pass and very long integers were rejected
 - ``Unique`` wrongly rejected input containing characters such as ``ﬁ`` or ``ß`` whose case-folded form is more than one character
+- ``Prompt.prompt()`` returned ``default`` without applying ``transform``, unlike typed input and commands
 - ``Prompt.string_list()`` returned the default without applying ``transform``
 - ``Prompt.integer()`` and ``Prompt.float()`` returned a ``default`` outside ``min``/``max``; they now raise ``ValueError``
 - ``Prompt.options()`` interpreted option descriptions as Rich markup, so text in square brackets disappeared and ``[/]`` raised ``MarkupError``
