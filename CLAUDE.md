@@ -8,10 +8,10 @@ promptpy is a small Python (>=3.12) library for command-line input and validatio
 
 ## Commands
 
-- `just test` — run tests (`uv run pytest`). Pytest config in `pyproject.toml` already enables `--cov=promptpy` with missing-line output and `--doctest-modules`, with `testpaths` of `tests/` and `src/` — so `>>>` examples in docstrings run as tests and must pass.
+- `just test` — run tests (`uv run pytest`). Pytest config in `pyproject.toml` enables `--doctest-modules` with `testpaths` of `tests/` and `src/`, so `>>>` examples in docstrings run as tests and must pass. A plain run does not measure coverage; use `just cov`.
 - Single test: `uv run pytest tests/test_prompt.py::test_name` (or `-k <expr>`).
 - `just check` — `ruff check --fix` + `ruff format` + `ty check` (via `uvx`). Ruff lint rules are `F`, `I`, `B`, `C4`, `SIM`, `RUF` and `D` (with `D401`), using the Google pydocstyle convention; `D` is ignored under `tests/` and `docs/`.
-- `just cov` — coverage JSON + badge update (the README advertises 100% coverage; keep it there).
+- `just cov` — tests with coverage (`--cov=promptpy`, missing-line output), then coverage JSON + badge update (the README advertises 100% coverage; keep it there).
 - `just docs` — Sphinx build with `-W` (warnings are errors); sources in `docs/source/`.
 - `just bump` — bumps the version via bumpver across `pyproject.toml`, `README.md`, `src/promptpy/__init__.py` and `docs/source/conf.py`; don't edit those by hand.
 - `just sync` / `tag` / `publish` are release steps (dev→main ff-merge, tag, PyPI upload); don't run them without being asked.

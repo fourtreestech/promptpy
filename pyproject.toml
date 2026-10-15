@@ -60,7 +60,7 @@ percent_path = ["totals", "percent_covered_display"]
 path = "src/promptpy/__init__.py"
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --cov-report term-missing --cov=promptpy"
+addopts = "--doctest-modules"
 testpaths = ["tests", "src"]
 
 [tool.ruff.lint]

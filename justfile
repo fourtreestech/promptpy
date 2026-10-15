@@ -16,7 +16,7 @@ test:
 
 # Run tests with coverage and update coverage badge
 cov:
-    uv run pytest --cov --cov-report term-missing --cov-report json
+    uv run pytest --cov=promptpy --cov-report term-missing --cov-report json
     uv run cov-badge
 
 # Build the docs
