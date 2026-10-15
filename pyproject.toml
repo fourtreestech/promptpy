@@ -81,7 +81,7 @@ env_list = ["3.14", "3.13", "3.12"]
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
 package = "editable"
-deps = ["pytest>=8", "pytest-cov>=6", "pytest-randomly>=3"]
+dependency_groups = ["test"]
 commands = [["pytest"]]
 
 [build-system]
@@ -91,10 +91,12 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "cov-badge>=0.1.1",
-    "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
-    "pytest-randomly>=3.16.0",
     "tox>=4.24.2",
+]
+test = [
+    "pytest>=8.3.5",
+    "pytest-randomly>=3.16.0",
 ]
 docs = [
     "sphinx>=7.4.7",

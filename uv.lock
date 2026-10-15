@@ -388,14 +388,16 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "cov-badge" },
-    { name = "pytest" },
     { name = "pytest-cov" },
-    { name = "pytest-randomly" },
     { name = "tox" },
 ]
 docs = [
     { name = "sphinx" },
     { name = "sphinx-rtd-theme" },
+]
+test = [
+    { name = "pytest" },
+    { name = "pytest-randomly" },
 ]
 
 [package.metadata]
@@ -404,14 +406,16 @@ requires-dist = [{ name = "rich", specifier = ">=15.0.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "cov-badge", specifier = ">=0.1.1" },
-    { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.0.0" },
-    { name = "pytest-randomly", specifier = ">=3.16.0" },
     { name = "tox", specifier = ">=4.24.2" },
 ]
 docs = [
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
+]
+test = [
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytest-randomly", specifier = ">=3.16.0" },
 ]
 
 [[package]]
