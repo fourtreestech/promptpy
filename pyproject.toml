@@ -75,14 +75,18 @@ convention = "google"
 "docs/*" = ["D"]
 
 [tool.tox]
-requires = ["tox>=4.24"]
-env_list = ["3.14", "3.13", "3.12"]
+requires = ["tox>=4.24", "tox-uv"]
+env_list = ["3.14", "3.13", "3.12", "lowest"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
 package = "editable"
 dependency_groups = ["test"]
 commands = [["pytest"]]
+
+[tool.tox.env.lowest]
+base_python = ["python3.12"]
+uv_resolution = "lowest-direct"
 
 [build-system]
 requires = ["hatchling"]
@@ -93,6 +97,7 @@ dev = [
     "cov-badge>=0.1.1",
     "pytest-cov>=6.0.0",
     "tox>=4.24.2",
+    "tox-uv>=1.37.0",
 ]
 test = [
     "pytest>=8.3.5",
