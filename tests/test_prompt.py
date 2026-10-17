@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from promptpy.prompt import Prompt
-from promptpy.validators import CharacterValidator, IntegerValidator
+from promptpy.validators import CharacterValidator, IntegerValidator, Length
 
 
 def test_mock_console(mock_console):
@@ -636,22 +636,108 @@ class TestPasswordPrompt:
         prompt = Prompt(mock_console)
 
         assert prompt.password() == "password1"
+        assert mock_console.hidden == [True]
+
+    def test_show_input(self, mock_console):
+        mock_console.register(["password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(show_input=True) == "password1"
+        assert mock_console.hidden == [False]
 
     def test_confirms_password(self, mock_console):
         mock_console.register(["password1", "password1"])
         prompt = Prompt(mock_console)
 
         assert prompt.password(confirm=True) == "password1"
+        assert mock_console.hidden == [True, True]
 
     def test_rejects_unmatched_passwords(self, mock_console, capsys):
         mock_console.register(["password1", "password2", "password1", "password1"])
         prompt = Prompt(mock_console)
 
         assert prompt.password(confirm=True) == "password1"
-        assert "Passwords don't match" in capsys.readouterr().out
+        out = capsys.readouterr().out
+        assert "Passwords don't match" in out
+        assert "[red]" not in out
 
     def test_toggle_visibility(self, mock_console):
         mock_console.register(["v", "password1"])
         prompt = Prompt(mock_console)
 
         assert prompt.password(toggle_visibility=True) == "password1"
+        assert mock_console.hidden == [True, False]
+
+    def test_toggle_visibility_twice(self, mock_console):
+        mock_console.register(["v", "v", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(toggle_visibility=True) == "password1"
+        assert mock_console.hidden == [True, False, True]
+
+    def test_confirm_uses_toggled_visibility(self, mock_console):
+        mock_console.register(["v", "password1", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(toggle_visibility=True, confirm=True) == "password1"
+        assert mock_console.hidden == [True, False, False]
+
+    def test_toggle_on_confirm(self, mock_console, capsys):
+        mock_console.register(["password1", "v", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(toggle_visibility=True, confirm=True) == "password1"
+        assert mock_console.hidden == [True, True, False]
+        assert "Passwords don't match" not in capsys.readouterr().out
+
+    def test_confirm_shows_toggle_hint(self, mock_console, capsys):
+        mock_console.register(["password1", "password1"])
+        prompt = Prompt(mock_console)
+
+        prompt.password(toggle_visibility=True, confirm=True)
+        assert "Confirm password (V to toggle visibility)" in capsys.readouterr().out
+
+    def test_rejects_empty_password(self, mock_console, capsys):
+        mock_console.register(["", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password() == "password1"
+        assert "Password cannot be empty" in capsys.readouterr().out
+        assert mock_console.hidden == [True, True]
+
+    def test_accept_empty(self, mock_console):
+        mock_console.register([""])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(accept_empty=True) == ""
+
+    def test_validators(self, mock_console, capsys):
+        mock_console.register(["short", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(validators=[Length(min=8)]) == "password1"
+        assert "Text too short" in capsys.readouterr().out
+
+    def test_toggle_bypasses_validators(self, mock_console):
+        mock_console.register(["V", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert (
+            prompt.password(toggle_visibility=True, validators=[Length(min=8)])
+            == "password1"
+        )
+        assert mock_console.hidden == [True, False]
+
+    def test_confirm_not_validated(self, mock_console):
+        mock_console.register(["password1", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(confirm=True, validators=[Length(min=8)]) == "password1"
+        assert mock_console.hidden == [True, True]
+
+    def test_v_is_password_without_toggle(self, mock_console):
+        mock_console.register(["v"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password() == "v"
+        assert mock_console.hidden == [True]

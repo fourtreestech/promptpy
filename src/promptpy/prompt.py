@@ -163,7 +163,7 @@ class Prompt:
         prompt text. If the user input is empty, ``default`` is returned
         (and displayed) after ``transform`` is applied, but without being validated.
 
-        If `password`` is True user input will be hidden.
+        If ``password`` is True user input will be hidden.
 
         Args:
             text: Text prompt to display
@@ -597,13 +597,20 @@ class Prompt:
         except ValueError:
             return date
 
-    def password(self, show_input=False, toggle_visibility=False, confirm=False) -> str:
+    def password(
+        self,
+        show_input: bool = False,
+        toggle_visibility: bool = False,
+        confirm: bool = False,
+        validators: Optional[list[Callable[[str], None]]] = None,
+        accept_empty: bool = False,
+    ) -> str:
         """Prompt for a password.
 
         .. code-block::
 
            prompt = Prompt()
-           date = prompt.password()
+           password = prompt.password()
            # Prompt is displayed as:
            # Enter password:
 
@@ -611,41 +618,53 @@ class Prompt:
         as it is typed.
 
         If ``toggle_visibility`` is True, the user will have the option to toggle whether
-        input is shown by entering 'v' at the prompt.
+        input is shown by entering 'v' at the prompt. This also applies at the
+        confirmation prompt if ``confirm`` is True.
 
         If ``confirm`` is True, the user will be prompted to enter the password for
         a second time. If the two passwords don't match an error will show and the
         user will be returned to the first password entry.
 
+        An empty password is rejected unless ``accept_empty`` is True. Any
+        ``validators`` are run, as in :meth:`prompt`, on the first password entry
+        only (after the empty check); the confirmation just has to match it.
+        Entering 'v' to toggle visibility skips validation.
+
         Args:
             show_input: Show user input as it is typed (default=False)
             toggle_visibility: The user can switch input visibility on and off (default=False)
             confirm: The user should be prompted to enter the password a second time (default=False)
+            validators: Validators to test the password (default=None)
+            accept_empty: Accept an empty password (default=False)
 
         Returns:
             The password entered by the user.
         """
-        while True:
-            # Get password
-            text: str = (
-                "Enter password ([bold]V[/] to toggle visibility)"
-                if toggle_visibility
-                else "Enter password"
-            )
-            pw = self.prompt(text, password=not show_input)
+        hint = " ([bold]V[/] to toggle visibility)" if toggle_visibility else ""
 
-            # Toggle visibility
-            if pw.lower() == "v":
-                show_input = not show_input
+        def not_empty(text: str) -> None:
+            if not text:
+                raise ValidationError("Password cannot be empty")
 
-            # Enter password for a second time
-            elif confirm:
-                pw2 = self.prompt("Confirm password", password=not show_input)
-                if pw2 == pw:
-                    break
+        checks: list[Callable[[str], None]] = [] if accept_empty else [not_empty]
+        checks.extend(validators or [])
+
+        def ask(text: str, checks: list[Callable[[str], None]]) -> str:
+            nonlocal show_input
+            while True:
+                entered = self.prompt(
+                    f"{text}{hint}",
+                    validators=checks,
+                    commands="v" if toggle_visibility else "",
+                    password=not show_input,
+                )
+                if toggle_visibility and entered.lower() == "v":
+                    show_input = not show_input
                 else:
-                    self.console.print(escape("[red]Passwords don't match![/]"))
-            else:
-                break
+                    return entered
 
-        return pw
+        while True:
+            pw = ask("Enter password", checks)
+            if not confirm or ask("Confirm password", []) == pw:
+                return pw
+            self.console.print("[bold red]Passwords don't match![/]")

@@ -26,7 +26,7 @@ promptpy is a small Python (>=3.12) library for command-line input and validatio
 
 ## Testing
 
-`tests/conftest.py` provides a `mock_console` fixture: call `mock_console.register([...])` with the sequence of inputs to return from successive `input()` calls (no registration yields empty strings), then pass it to `Prompt(mock_console)`. Tests use `pytest-randomly` under tox, so don't rely on test order.
+`tests/conftest.py` provides a `mock_console` fixture: call `mock_console.register([...])` with the sequence of inputs to return from successive `input()` calls (no registration yields empty strings), then pass it to `Prompt(mock_console)`. `mock_console.hidden` lists the `password` flag of each `input()` call. Tests use `pytest-randomly` under tox, so don't rely on test order.
 
 ## Docs
 
