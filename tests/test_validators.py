@@ -281,6 +281,15 @@ class TestPasswordRulesValidator:
         v = PasswordRulesValidator()
         assert v("") is None
 
+    def test_negative_min_length_raises_value_error(self):
+        with pytest.raises(ValueError, match="min_length"):
+            PasswordRulesValidator(min_length=-1)
+
+    @pytest.mark.parametrize("min_length", ["8", 8.0])
+    def test_non_int_min_length_raises_type_error(self, min_length):
+        with pytest.raises(TypeError, match="min_length"):
+            PasswordRulesValidator(min_length=min_length)
+
     def test_min_length_returns_none(self):
         v = PasswordRulesValidator(min_length=5)
         assert v("abcde") is None

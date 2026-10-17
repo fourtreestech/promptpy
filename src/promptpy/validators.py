@@ -695,7 +695,7 @@ class PasswordRulesValidator:
        promptpy.validators.ValidationError: Password cannot be empty
 
     Args:
-        min_length: Minimum password length (default=0)
+        min_length: Minimum password length, 0 or greater (default=0)
         lower: True if the password must contain at least one lowercase letter (default=False)
         upper: True if the password must contain at least one uppercase letter (default=False)
         digit: True if the password must contain at least one digit (0-9) (default=False)
@@ -712,7 +712,19 @@ class PasswordRulesValidator:
         symbol: bool = False,
         accept_empty: bool = True,
     ) -> None:
-        """Initialize the validator."""
+        """Initialize the validator.
+
+        Raises:
+            TypeError: if min_length is not an int
+            ValueError: if min_length is negative
+        """
+        if not isinstance(min_length, int):
+            raise TypeError(
+                f"min_length must be an int, not {type(min_length).__name__}"
+            )
+        if min_length < 0:
+            raise ValueError(f"min_length must be 0 or greater, got {min_length}")
+
         self.min_length = min_length
         self.lower = lower
         self.upper = upper
