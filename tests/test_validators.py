@@ -9,6 +9,7 @@ from promptpy.validators import (
     FloatValidator,
     IntegerValidator,
     Length,
+    PasswordRulesValidator,
     Unique,
     ValidationError,
 )
@@ -273,3 +274,98 @@ class TestDateValidator:
         v = DateValidator("%d/%m/%Y", accept_empty=False)
         with pytest.raises(ValidationError):
             v("")
+
+
+class TestPasswordRulesValidator:
+    def test_no_rules_returns_none(self):
+        v = PasswordRulesValidator()
+        assert v("") is None
+
+    def test_min_length_returns_none(self):
+        v = PasswordRulesValidator(min_length=5)
+        assert v("abcde") is None
+
+    def test_min_length_raises_error(self):
+        v = PasswordRulesValidator(min_length=5)
+        with pytest.raises(ValidationError, match="minimum length"):
+            v("abcd")
+
+    def test_lower_returns_none(self):
+        v = PasswordRulesValidator(lower=True)
+        assert v("ABc") is None
+
+    def test_lower_raises_error(self):
+        v = PasswordRulesValidator(lower=True)
+        with pytest.raises(ValidationError, match="lowercase letter"):
+            v("ABC1")
+
+    def test_upper_returns_none(self):
+        v = PasswordRulesValidator(upper=True)
+        assert v("abC") is None
+
+    def test_upper_raises_error(self):
+        v = PasswordRulesValidator(upper=True)
+        with pytest.raises(ValidationError, match="uppercase letter"):
+            v("abc1")
+
+    def test_digit_returns_none(self):
+        v = PasswordRulesValidator(digit=True)
+        assert v("abc1") is None
+
+    def test_digit_raises_error(self):
+        v = PasswordRulesValidator(digit=True)
+        with pytest.raises(ValidationError, match="numerical digit"):
+            v("abc")
+
+    def test_symbol_returns_none(self):
+        v = PasswordRulesValidator(symbol=True)
+        assert v("abc$") is None
+
+    def test_symbol_raises_error(self):
+        v = PasswordRulesValidator(symbol=True)
+        with pytest.raises(ValidationError, match="symbol"):
+            v("abc1")
+
+    def test_all_rules_returns_none(self):
+        v = PasswordRulesValidator(
+            min_length=8, lower=True, upper=True, digit=True, symbol=True
+        )
+        assert v("Abcdef1!") is None
+
+    def test_multiple_violations_lists_rules(self):
+        v = PasswordRulesValidator(min_length=8, upper=True, digit=True)
+        with pytest.raises(ValidationError) as exc_info:
+            v("xyz")
+        assert str(exc_info.value) == (
+            "Password must be at least 8 characters"
+            " and contain an uppercase letter and a digit"
+        )
+
+    def test_multiple_violations_without_min_length_lists_rules(self):
+        v = PasswordRulesValidator(upper=True, digit=True)
+        with pytest.raises(ValidationError) as exc_info:
+            v("xyz")
+        assert str(exc_info.value) == (
+            "Password must contain an uppercase letter and a digit"
+        )
+
+    def test_rules_summary_for_all_rules(self):
+        v = PasswordRulesValidator(
+            min_length=8, lower=True, upper=True, digit=True, symbol=True
+        )
+        assert v._rules() == (
+            "Password must be at least 8 characters and contain"
+            " an uppercase and a lowercase letter, a digit and a symbol"
+        )
+
+    def test_rules_summary_for_lower_only(self):
+        v = PasswordRulesValidator(lower=True)
+        assert v._rules() == "Password must contain a lowercase letter"
+
+    def test_rules_summary_for_min_length_only(self):
+        v = PasswordRulesValidator(min_length=8)
+        assert v._rules() == "Password must be at least 8 characters"
+
+    def test_rules_summary_with_no_rules_is_empty(self):
+        v = PasswordRulesValidator()
+        assert v._rules() == ""
