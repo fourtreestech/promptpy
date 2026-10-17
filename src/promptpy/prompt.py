@@ -8,8 +8,10 @@ The typed helpers :meth:`~Prompt.integer`, :meth:`~Prompt.float`,
 :meth:`~Prompt.string_list`, :meth:`~Prompt.yes_no`, :meth:`~Prompt.options`,
 :meth:`~Prompt.choice` and :meth:`~Prompt.date` build on it, supplying the
 appropriate validators and converting the result to the right type.
+:meth:`~Prompt.password` prompts for hidden input, with optional confirmation.
 
-Three concepts are shared by all of the methods:
+Three concepts are shared by most of the methods (:meth:`~Prompt.password`
+takes none of them):
 
 * **default**: returned if the user just presses Enter, and shown in the prompt
   as ``[default]``.
@@ -54,7 +56,7 @@ class Prompt:
     """Prompt for and validate different types of data.
 
     Call methods of this class to prompt for integers, floats, dates,
-    yes/no answers, choices and so on. Each method re-prompts until the
+    yes/no answers, choices, passwords and so on. Each method re-prompts until the
     input is valid.
 
     If you have a Rich Console instance already created, supply
@@ -614,21 +616,40 @@ class Prompt:
            # Prompt is displayed as:
            # Enter password:
 
+        This method has no ``default``, ``commands`` or ``transform`` parameters.
+
         If ``show_input`` is False (the default), the password will not show on screen
         as it is typed.
 
         If ``toggle_visibility`` is True, the user will have the option to toggle whether
-        input is shown by entering 'v' at the prompt. This also applies at the
-        confirmation prompt if ``confirm`` is True.
+        input is shown by entering 'v' (or 'V') at the prompt. This also applies at the
+        confirmation prompt if ``confirm`` is True. Since 'v' is always treated as
+        a toggle, a password consisting of just that letter cannot be entered.
 
         If ``confirm`` is True, the user will be prompted to enter the password for
-        a second time. If the two passwords don't match an error will show and the
-        user will be returned to the first password entry.
+        a second time. If the two passwords don't match, "Passwords don't match!"
+        is shown and the user will be returned to the first password entry.
 
         An empty password is rejected unless ``accept_empty`` is True. Any
         ``validators`` are run, as in :meth:`prompt`, on the first password entry
         only (after the empty check); the confirmation just has to match it.
         Entering 'v' to toggle visibility skips validation.
+
+        To enforce password complexity rules use
+        :class:`~promptpy.validators.PasswordRulesValidator`:
+
+        .. code-block::
+
+           from promptpy.validators import PasswordRulesValidator
+
+           password = prompt.password(
+               toggle_visibility=True,
+               confirm=True,
+               validators=[PasswordRulesValidator(min_length=12, digit=True)],
+           )
+           # Prompt is displayed as:
+           # Enter password (V to toggle visibility):
+           # Confirm password (V to toggle visibility):
 
         Args:
             show_input: Show user input as it is typed (default=False)

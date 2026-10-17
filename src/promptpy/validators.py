@@ -620,15 +620,18 @@ def _join_and(items: list[str]) -> str:
 class PasswordRulesValidator:
     """Validates that an input string complies with a set of password complexity rules.
 
-    Set password rules via the constructor, the validator will
-    check that the input string complies with the rules.
+    Set password rules via the constructor; the validator will
+    check that the input string complies with the rules. It is intended for use
+    with :meth:`promptpy.prompt.Prompt.password`, but works with any prompt.
 
     Set any combination of the following rules:
 
     - Minimum length
-    - Contains at least one lowercase character
-    - Contains at least one uppercase character
-    - Contains at least one numerical digit
+    - Contains at least one lowercase letter (any Unicode lowercase letter,
+      such as ``é``)
+    - Contains at least one uppercase letter (any Unicode uppercase letter,
+      such as ``Ä``)
+    - Contains at least one numerical digit (``0`` to ``9`` only)
     - Contains at least one symbol (any Unicode punctuation or symbol character,
       such as ``!``, ``$``, ``£`` or ``€``; whitespace does not count)
 
@@ -700,6 +703,11 @@ class PasswordRulesValidator:
        Traceback (most recent call last):
            ...
        promptpy.validators.ValidationError: Password cannot be empty
+
+    :meth:`~promptpy.prompt.Prompt.password` rejects an empty password itself
+    unless its own ``accept_empty`` is True, so ``accept_empty`` here only matters
+    when the validator is used elsewhere, such as with
+    :meth:`~promptpy.prompt.Prompt.prompt`.
 
     Args:
         min_length: Minimum password length, 0 or greater (default=0)

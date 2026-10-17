@@ -8,7 +8,7 @@
 
 **promptpy** prompts for and validates a range of different data types
 on the command line. Out of the box it supports limited character sets,
-integers, floats, dates, yes/no, choices, lists and single-character commands:
+integers, floats, dates, yes/no, choices, lists, passwords and single-character commands:
 
     from promptpy import Prompt
 
@@ -65,6 +65,20 @@ Requires Python 3.12 or later.
     date = prompt.date('Enter a date (dd/mm/yyyy)', '%d/%m/%Y', default=datetime.date(2024, 1, 1))
     # Prompt is displayed as:
     # Enter a date (dd/mm/yyyy) [01/01/2024]:
+
+### Password
+
+    from promptpy import Prompt
+    from promptpy.validators import PasswordRulesValidator
+
+    prompt = Prompt()
+    password = prompt.password(
+        toggle_visibility=True,
+        confirm=True,
+        validators=[PasswordRulesValidator(min_length=12, digit=True)],
+    )
+    # Prompt is displayed as:
+    # Enter password (V to toggle visibility):
 
 ### Commands
 

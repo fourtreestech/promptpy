@@ -4,7 +4,7 @@
 
 ### Added
 
-- ``Prompt.password()`` prompts for a password, with options to show the input, toggle visibility with ``V`` and confirm the password. Empty passwords are rejected unless ``accept_empty`` is set, and ``validators`` can be supplied
+- ``Prompt.password()`` prompts for a password, with options to show the input, toggle visibility with ``V`` (at the confirmation prompt too) and confirm the password. Empty passwords are rejected unless ``accept_empty`` is set, and ``validators`` can be supplied (they are run on the first entry only)
 
 - ``PasswordRulesValidator`` checks minimum length and the presence of lowercase, uppercase, digit and symbol characters (Unicode-aware for letters and symbols). It accepts the empty string unless ``accept_empty=False``
 

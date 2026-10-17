@@ -61,6 +61,9 @@ under :ref:`commands <usage-commands>`.
    * - :meth:`~promptpy.prompt.Prompt.string_list`
      - ``list[str]``
      - A list of words separated by commas
+   * - :meth:`~promptpy.prompt.Prompt.password`
+     - ``str``
+     - A password, hidden as it is typed and optionally confirmed
    * - :meth:`~promptpy.prompt.Prompt.prompt`
      - ``str``
      - Anything: the core method, which takes your own validators
@@ -102,10 +105,48 @@ For example::
    returns what the user typed, so ``HAM`` is returned as ``'HAM'`` unless
    you pass ``transform='lower'``.
 
+Passwords
+---------
+
+:meth:`~promptpy.prompt.Prompt.password` hides what the user types::
+
+    # Enter password:
+    password = prompt.password()
+
+Pass ``show_input=True`` to display the input as it is typed. With
+``toggle_visibility=True`` the user can switch between hidden and visible input
+by entering ``v`` at the prompt (so a password of just ``v`` cannot be entered)::
+
+    # Enter password (V to toggle visibility):
+    password = prompt.password(toggle_visibility=True)
+
+With ``confirm=True`` the user is asked to enter the password a second time.
+If the two entries differ, an error is shown and the user returns to the first
+prompt. An empty password is rejected unless you pass ``accept_empty=True``.
+
+To enforce password rules pass ``validators``, for example
+:class:`~promptpy.validators.PasswordRulesValidator`. Validators are run on the
+first entry only; the confirmation just has to match it::
+
+    from promptpy.validators import PasswordRulesValidator
+
+    password = prompt.password(
+        confirm=True,
+        validators=[PasswordRulesValidator(min_length=12, upper=True, digit=True)],
+    )
+
+    Enter password: ********
+    Password must be at least 12 characters and contain an uppercase letter
+    and a digit. Enter password:
+
+Unlike the other methods, :meth:`~promptpy.prompt.Prompt.password` has no
+``default``, ``commands`` or ``transform``.
+
 Defaults
 --------
 
-All of the methods take an optional ``default``. It is shown in square brackets
+All of the methods except :meth:`~promptpy.prompt.Prompt.password` take an
+optional ``default``. It is shown in square brackets
 at the end of the prompt, and is returned if the user presses Enter
 without typing anything. Without a default, the typed methods
 (:meth:`~promptpy.prompt.Prompt.integer`, :meth:`~promptpy.prompt.Prompt.date`,
@@ -182,8 +223,9 @@ or returns ``None``. Validators are run in order, and the user is re-prompted
 after the first one that fails.
 
 ``promptpy`` ships with a range of validators, such as
-:class:`~promptpy.validators.IntegerValidator` and
-:class:`~promptpy.validators.Length` - see :doc:`validators` for the full list. You can
+:class:`~promptpy.validators.IntegerValidator`,
+:class:`~promptpy.validators.Length` and
+:class:`~promptpy.validators.PasswordRulesValidator` - see :doc:`validators` for the full list. You can
 combine them yourself::
 
     from promptpy.validators import CharacterValidator, Length, Unique
