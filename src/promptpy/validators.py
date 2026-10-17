@@ -610,6 +610,13 @@ class DateValidator:
             raise ValidationError("Not a valid date") from None
 
 
+def _join_and(items: list[str]) -> str:
+    """Join items as an English list: 'a', 'a and b' or 'a, b and c'."""
+    if len(items) == 1:
+        return items[0]
+    return f"{', '.join(items[:-1])} and {items[-1]}"
+
+
 class PasswordRulesValidator:
     """Validates that an input string complies with a set of password complexity rules.
 
@@ -736,41 +743,25 @@ class PasswordRulesValidator:
         self, min_length: int, lower: bool, upper: bool, digit: bool, symbol: bool
     ) -> str:
         """Summary of the given rules in user-friendly str format."""
-        rules: list[str] = []
+        contains = [
+            phrase
+            for enabled, phrase in [
+                (lower and upper, "an uppercase and a lowercase letter"),
+                (lower and not upper, "a lowercase letter"),
+                (upper and not lower, "an uppercase letter"),
+                (digit, "a digit"),
+                (symbol, "a symbol"),
+            ]
+            if enabled
+        ]
 
-        if lower and upper:
-            rules.append("an uppercase and a lowercase letter")
-
-        elif lower:
-            rules.append("a lowercase letter")
-
-        elif upper:
-            rules.append("an uppercase letter")
-
-        if digit:
-            rules.append("a digit")
-
-        if symbol:
-            rules.append("a symbol")
-
-        if rules:
-            combined = ", ".join(rules[:-1])
-            combined = f"{combined} and {rules[-1]}" if combined else rules[-1]
-        else:
-            combined = ""
-
+        clauses: list[str] = []
         if min_length:
-            rule_str = f"Password must be at least {min_length} characters"
-            if combined:
-                rule_str = f"{rule_str} and contain {combined}"
+            clauses.append(f"be at least {min_length} characters")
+        if contains:
+            clauses.append(f"contain {_join_and(contains)}")
 
-        elif combined:
-            rule_str = f"Password must contain {combined}"
-
-        else:
-            rule_str = ""
-
-        return rule_str
+        return f"Password must {' and '.join(clauses)}" if clauses else ""
 
     def __call__(self, text: str) -> None:
         """Validate a string.
