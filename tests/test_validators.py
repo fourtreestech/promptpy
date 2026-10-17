@@ -287,8 +287,9 @@ class TestPasswordRulesValidator:
 
     def test_min_length_raises_error(self):
         v = PasswordRulesValidator(min_length=5)
-        with pytest.raises(ValidationError, match="minimum length"):
+        with pytest.raises(ValidationError) as exc_info:
             v("abcd")
+        assert str(exc_info.value) == "Password must be at least 5 characters"
 
     def test_lower_returns_none(self):
         v = PasswordRulesValidator(lower=True)

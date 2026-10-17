@@ -638,7 +638,7 @@ class PasswordRulesValidator:
        >>> v('xyz')
        Traceback (most recent call last):
            ...
-       promptpy.validators.ValidationError: Password does not meet minimum length requirements
+       promptpy.validators.ValidationError: Password must be at least 12 characters
 
        >>> v = PasswordRulesValidator(lower=True)
        >>> v('Abcdefghijkl')
@@ -783,7 +783,7 @@ class PasswordRulesValidator:
         # Check for length
         too_short = bool(self.min_length) and len(text) < self.min_length
         if too_short:
-            errors.append("Password does not meet minimum length requirements")
+            errors.append(f"Password must be at least {self.min_length} characters")
 
         # Check for lower case
         no_lower = self.lower and not any(letter.islower() for letter in text)
