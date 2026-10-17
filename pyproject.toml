@@ -80,11 +80,13 @@ env_list = ["3.14", "3.13", "3.12", "lowest"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
+runner = "uv-venv-lock-runner"
 package = "editable"
 dependency_groups = ["test"]
 commands = [["pytest"]]
 
 [tool.tox.env.lowest]
+runner = "uv-venv-runner"
 base_python = ["python3.12"]
 uv_resolution = "lowest-direct"
 
