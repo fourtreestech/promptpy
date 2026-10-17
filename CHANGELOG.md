@@ -6,6 +6,8 @@
 
 - ``Prompt.password()`` prompts for a password, with options to show the input, toggle visibility with ``V`` and confirm the password. Empty passwords are rejected unless ``accept_empty`` is set, and ``validators`` can be supplied
 
+- ``PasswordRulesValidator`` checks minimum length and the presence of lowercase, uppercase, digit and symbol characters (Unicode-aware for letters and symbols)
+
 ### Changed
 
 - Docstrings converted from reST field lists to Google style (rendered via ``sphinx.ext.napoleon``)

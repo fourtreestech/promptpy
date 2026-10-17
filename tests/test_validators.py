@@ -326,6 +326,24 @@ class TestPasswordRulesValidator:
         with pytest.raises(ValidationError, match="symbol"):
             v("abc1")
 
+    def test_lower_accepts_non_ascii(self):
+        v = PasswordRulesValidator(lower=True)
+        assert v("ÉCOLEé") is None
+
+    def test_upper_accepts_non_ascii(self):
+        v = PasswordRulesValidator(upper=True)
+        assert v("écolÉ") is None
+
+    @pytest.mark.parametrize("text", ["abc£", "abc€"])
+    def test_symbol_accepts_non_ascii(self, text):
+        v = PasswordRulesValidator(symbol=True)
+        assert v(text) is None
+
+    def test_symbol_rejects_whitespace(self):
+        v = PasswordRulesValidator(symbol=True)
+        with pytest.raises(ValidationError, match="symbol"):
+            v("abc def")
+
     def test_all_rules_returns_none(self):
         v = PasswordRulesValidator(
             min_length=8, lower=True, upper=True, digit=True, symbol=True

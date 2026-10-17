@@ -30,9 +30,10 @@ pass ``accept_empty=False`` to reject it.
 """
 
 import math
+import unicodedata
 from collections import Counter
 from datetime import datetime
-from string import ascii_lowercase, ascii_uppercase, digits, punctuation
+from string import digits
 from typing import Optional
 
 
@@ -610,7 +611,7 @@ class DateValidator:
 
 
 class PasswordRulesValidator:
-    r"""Validates that an input string complies with a set of password complexity rules.
+    """Validates that an input string complies with a set of password complexity rules.
 
     Set password rules via the constructor, the validator will
     check that the input string complies with the rules.
@@ -621,7 +622,8 @@ class PasswordRulesValidator:
     - Contains at least one lowercase character
     - Contains at least one uppercase character
     - Contains at least one numerical digit
-    - Contains at least one symbol from '!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~'
+    - Contains at least one symbol (any Unicode punctuation or symbol character,
+      such as ``!``, ``$``, ``£`` or ``€``; whitespace does not count)
 
     To validate a string pass it as a parameter when calling
     the class instance. If validation fails it will raise a :exc:`ValidationError`.
@@ -678,7 +680,7 @@ class PasswordRulesValidator:
         lower: True if the password must contain at least one lowercase letter (default=False)
         upper: True if the password must contain at least one uppercase letter (default=False)
         digit: True if the password must contain at least one digit (0-9) (default=False)
-        symbol: True if the password must contain at least one symbol (default=False)
+        symbol: True if the password must contain at least one Unicode punctuation or symbol character (default=False)
     """
 
     def __init__(
@@ -752,11 +754,11 @@ class PasswordRulesValidator:
             errors.append("Password does not meet minimum length requirements")
 
         # Check for lower case
-        if self.lower and not any(letter in ascii_lowercase for letter in text):
+        if self.lower and not any(letter.islower() for letter in text):
             errors.append("Password does not contain a lowercase letter")
 
         # Check for upper case
-        if self.upper and not any(letter in ascii_uppercase for letter in text):
+        if self.upper and not any(letter.isupper() for letter in text):
             errors.append("Password does not contain an uppercase letter")
 
         # Check for digit
@@ -764,7 +766,9 @@ class PasswordRulesValidator:
             errors.append("Password does not contain a numerical digit")
 
         # Check for symbol
-        if self.symbol and not any(letter in punctuation for letter in text):
+        if self.symbol and not any(
+            unicodedata.category(letter)[0] in "PS" for letter in text
+        ):
             errors.append("Password does not contain a symbol")
 
         # Single error - flag which rule has been violated
