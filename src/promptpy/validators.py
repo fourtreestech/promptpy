@@ -669,7 +669,7 @@ class PasswordRulesValidator:
        >>> v('xyz')
        Traceback (most recent call last):
            ...
-       promptpy.validators.ValidationError: Password does not contain a numerical digit
+       promptpy.validators.ValidationError: Password does not contain a digit
 
        >>> v = PasswordRulesValidator(symbol=True)
        >>> v('Abcdefghijkl1$')
@@ -693,7 +693,7 @@ class PasswordRulesValidator:
        >>> v('Xyzxyzxyz')
        Traceback (most recent call last):
            ...
-       promptpy.validators.ValidationError: Password does not contain a numerical digit
+       promptpy.validators.ValidationError: Password does not contain a digit
 
        >>> v = PasswordRulesValidator(min_length=8)
        >>> v('')
@@ -730,10 +730,10 @@ class PasswordRulesValidator:
         """Initialize the validator.
 
         Raises:
-            TypeError: if min_length is not an int
+            TypeError: if min_length is not an int (bools are rejected)
             ValueError: if min_length is negative
         """
-        if not isinstance(min_length, int):
+        if isinstance(min_length, bool) or not isinstance(min_length, int):
             raise TypeError(
                 f"min_length must be an int, not {type(min_length).__name__}"
             )
@@ -809,7 +809,7 @@ class PasswordRulesValidator:
         # Check for digit
         no_digit = self.digit and not any(letter in digits for letter in text)
         if no_digit:
-            errors.append("Password does not contain a numerical digit")
+            errors.append("Password does not contain a digit")
 
         # Check for symbol
         no_symbol = self.symbol and not any(

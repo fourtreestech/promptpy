@@ -285,7 +285,7 @@ class TestPasswordRulesValidator:
         with pytest.raises(ValueError, match="min_length"):
             PasswordRulesValidator(min_length=-1)
 
-    @pytest.mark.parametrize("min_length", ["8", 8.0])
+    @pytest.mark.parametrize("min_length", ["8", 8.0, True])
     def test_non_int_min_length_raises_type_error(self, min_length):
         with pytest.raises(TypeError, match="min_length"):
             PasswordRulesValidator(min_length=min_length)
@@ -324,8 +324,9 @@ class TestPasswordRulesValidator:
 
     def test_digit_raises_error(self):
         v = PasswordRulesValidator(digit=True)
-        with pytest.raises(ValidationError, match="numerical digit"):
+        with pytest.raises(ValidationError) as exc_info:
             v("abc")
+        assert str(exc_info.value) == "Password does not contain a digit"
 
     def test_symbol_returns_none(self):
         v = PasswordRulesValidator(symbol=True)
