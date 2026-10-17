@@ -628,7 +628,7 @@ class PasswordRulesValidator:
     To validate a string pass it as a parameter when calling
     the class instance. If validation fails it will raise a :exc:`ValidationError`.
     If one rule is violated the ValidationError will state which rule is not met;
-    if more than one the ValidationError will list the active validation rules.
+    if more than one the ValidationError will list the rules that are not met.
 
     .. doctest::
 
@@ -670,10 +670,20 @@ class PasswordRulesValidator:
 
        >>> v = PasswordRulesValidator(min_length=8, upper=True, digit=True)
        >>> v('Abcdefghijkl1$')
-       >>> v('XYZ')
+       >>> v('xyz')
        Traceback (most recent call last):
            ...
        promptpy.validators.ValidationError: Password must be at least 8 characters and contain an uppercase letter and a digit
+
+       >>> v('XYZ')
+       Traceback (most recent call last):
+           ...
+       promptpy.validators.ValidationError: Password must be at least 8 characters and contain a digit
+
+       >>> v('Xyzxyzxyz')
+       Traceback (most recent call last):
+           ...
+       promptpy.validators.ValidationError: Password does not contain a numerical digit
 
        >>> v = PasswordRulesValidator(min_length=8)
        >>> v('')
@@ -710,23 +720,25 @@ class PasswordRulesValidator:
         self.symbol = symbol
         self.accept_empty = accept_empty
 
-    def _rules(self) -> str:
-        """Summary of the rules in user-friendly str format."""
+    def _rules(
+        self, min_length: int, lower: bool, upper: bool, digit: bool, symbol: bool
+    ) -> str:
+        """Summary of the given rules in user-friendly str format."""
         rules: list[str] = []
 
-        if self.lower and self.upper:
+        if lower and upper:
             rules.append("an uppercase and a lowercase letter")
 
-        elif self.lower:
+        elif lower:
             rules.append("a lowercase letter")
 
-        elif self.upper:
+        elif upper:
             rules.append("an uppercase letter")
 
-        if self.digit:
+        if digit:
             rules.append("a digit")
 
-        if self.symbol:
+        if symbol:
             rules.append("a symbol")
 
         if rules:
@@ -735,8 +747,8 @@ class PasswordRulesValidator:
         else:
             combined = ""
 
-        if self.min_length:
-            rule_str = f"Password must be at least {self.min_length} characters"
+        if min_length:
+            rule_str = f"Password must be at least {min_length} characters"
             if combined:
                 rule_str = f"{rule_str} and contain {combined}"
 
@@ -769,31 +781,44 @@ class PasswordRulesValidator:
 
         errors: list[str] = []
         # Check for length
-        if self.min_length and len(text) < self.min_length:
+        too_short = bool(self.min_length) and len(text) < self.min_length
+        if too_short:
             errors.append("Password does not meet minimum length requirements")
 
         # Check for lower case
-        if self.lower and not any(letter.islower() for letter in text):
+        no_lower = self.lower and not any(letter.islower() for letter in text)
+        if no_lower:
             errors.append("Password does not contain a lowercase letter")
 
         # Check for upper case
-        if self.upper and not any(letter.isupper() for letter in text):
+        no_upper = self.upper and not any(letter.isupper() for letter in text)
+        if no_upper:
             errors.append("Password does not contain an uppercase letter")
 
         # Check for digit
-        if self.digit and not any(letter in digits for letter in text):
+        no_digit = self.digit and not any(letter in digits for letter in text)
+        if no_digit:
             errors.append("Password does not contain a numerical digit")
 
         # Check for symbol
-        if self.symbol and not any(
+        no_symbol = self.symbol and not any(
             unicodedata.category(letter)[0] in "PS" for letter in text
-        ):
+        )
+        if no_symbol:
             errors.append("Password does not contain a symbol")
 
         # Single error - flag which rule has been violated
         if len(errors) == 1:
             raise ValidationError(errors[0])
 
-        # Multiple errors - list out rules
+        # Multiple errors - list out the rules that were violated
         elif errors:
-            raise ValidationError(self._rules())
+            raise ValidationError(
+                self._rules(
+                    self.min_length if too_short else 0,
+                    no_lower,
+                    no_upper,
+                    no_digit,
+                    no_symbol,
+                )
+            )

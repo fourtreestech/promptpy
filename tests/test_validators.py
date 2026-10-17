@@ -379,23 +379,48 @@ class TestPasswordRulesValidator:
             "Password must contain an uppercase letter and a digit"
         )
 
-    def test_rules_summary_for_all_rules(self):
+    def test_multiple_violations_lists_only_failed_rules(self):
         v = PasswordRulesValidator(
             min_length=8, lower=True, upper=True, digit=True, symbol=True
         )
-        assert v._rules() == (
+        with pytest.raises(ValidationError) as exc_info:
+            v("abcdefg")
+        assert str(exc_info.value) == (
+            "Password must be at least 8 characters"
+            " and contain an uppercase letter, a digit and a symbol"
+        )
+
+    def test_multiple_violations_with_sufficient_length_omits_length(self):
+        v = PasswordRulesValidator(
+            min_length=8, lower=True, upper=True, digit=True, symbol=True
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            v("abcdefgh")
+        assert str(exc_info.value) == (
+            "Password must contain an uppercase letter, a digit and a symbol"
+        )
+
+    def test_rules_summary_for_all_rules(self):
+        v = PasswordRulesValidator()
+        assert v._rules(8, True, True, True, True) == (
             "Password must be at least 8 characters and contain"
             " an uppercase and a lowercase letter, a digit and a symbol"
         )
 
     def test_rules_summary_for_lower_only(self):
-        v = PasswordRulesValidator(lower=True)
-        assert v._rules() == "Password must contain a lowercase letter"
+        v = PasswordRulesValidator()
+        assert (
+            v._rules(0, True, False, False, False)
+            == "Password must contain a lowercase letter"
+        )
 
     def test_rules_summary_for_min_length_only(self):
-        v = PasswordRulesValidator(min_length=8)
-        assert v._rules() == "Password must be at least 8 characters"
+        v = PasswordRulesValidator()
+        assert (
+            v._rules(8, False, False, False, False)
+            == "Password must be at least 8 characters"
+        )
 
     def test_rules_summary_with_no_rules_is_empty(self):
         v = PasswordRulesValidator()
-        assert v._rules() == ""
+        assert v._rules(0, False, False, False, False) == ""
