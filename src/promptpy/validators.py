@@ -675,12 +675,22 @@ class PasswordRulesValidator:
            ...
        promptpy.validators.ValidationError: Password must be at least 8 characters and contain an uppercase letter and a digit
 
+       >>> v = PasswordRulesValidator(min_length=8)
+       >>> v('')
+
+       >>> v = PasswordRulesValidator(min_length=8, accept_empty=False)
+       >>> v('')
+       Traceback (most recent call last):
+           ...
+       promptpy.validators.ValidationError: Password cannot be empty
+
     Args:
         min_length: Minimum password length (default=0)
         lower: True if the password must contain at least one lowercase letter (default=False)
         upper: True if the password must contain at least one uppercase letter (default=False)
         digit: True if the password must contain at least one digit (0-9) (default=False)
         symbol: True if the password must contain at least one Unicode punctuation or symbol character (default=False)
+        accept_empty: Whether the validator should accept the empty string (default=True)
     """
 
     def __init__(
@@ -690,6 +700,7 @@ class PasswordRulesValidator:
         upper: bool = False,
         digit: bool = False,
         symbol: bool = False,
+        accept_empty: bool = True,
     ) -> None:
         """Initialize the validator."""
         self.min_length = min_length
@@ -697,6 +708,7 @@ class PasswordRulesValidator:
         self.upper = upper
         self.digit = digit
         self.symbol = symbol
+        self.accept_empty = accept_empty
 
     def _rules(self) -> str:
         """Summary of the rules in user-friendly str format."""
@@ -748,6 +760,13 @@ class PasswordRulesValidator:
         Raises:
             ValidationError: if validation fails
         """
+        # Check for empty string
+        if not text:
+            if self.accept_empty:
+                return None
+            else:
+                raise ValidationError("Password cannot be empty")
+
         errors: list[str] = []
         # Check for length
         if self.min_length and len(text) < self.min_length:

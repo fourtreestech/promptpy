@@ -344,6 +344,18 @@ class TestPasswordRulesValidator:
         with pytest.raises(ValidationError, match="symbol"):
             v("abc def")
 
+    def test_empty_accepted_by_default_with_rules(self):
+        v = PasswordRulesValidator(
+            min_length=8, lower=True, upper=True, digit=True, symbol=True
+        )
+        assert v("") is None
+
+    @pytest.mark.parametrize("kwargs", [{}, {"min_length": 8, "lower": True}])
+    def test_empty_rejected_when_accept_empty_false(self, kwargs):
+        v = PasswordRulesValidator(accept_empty=False, **kwargs)
+        with pytest.raises(ValidationError, match="cannot be empty"):
+            v("")
+
     def test_all_rules_returns_none(self):
         v = PasswordRulesValidator(
             min_length=8, lower=True, upper=True, digit=True, symbol=True

@@ -3,7 +3,12 @@ import datetime
 import pytest
 
 from promptpy.prompt import Prompt
-from promptpy.validators import CharacterValidator, IntegerValidator, Length
+from promptpy.validators import (
+    CharacterValidator,
+    IntegerValidator,
+    Length,
+    PasswordRulesValidator,
+)
 
 
 def test_mock_console(mock_console):
@@ -710,6 +715,17 @@ class TestPasswordPrompt:
         prompt = Prompt(mock_console)
 
         assert prompt.password(accept_empty=True) == ""
+
+    def test_accept_empty_with_password_rules(self, mock_console):
+        mock_console.register([""])
+        prompt = Prompt(mock_console)
+
+        assert (
+            prompt.password(
+                accept_empty=True, validators=[PasswordRulesValidator(lower=True)]
+            )
+            == ""
+        )
 
     def test_validators(self, mock_console, capsys):
         mock_console.register(["short", "password1"])
