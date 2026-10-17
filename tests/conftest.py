@@ -26,11 +26,14 @@ class MockConsole:
         self._input = text
         self.g = iter(self._input)
 
-    def input(self, text):
+    def input(self, text, password=False):
         # Empty input returns "", otherwise the next item in the sequence
         entered = next(self.g) if self._input else ""
         self._console.print(f"{text}{entered}")
         return entered
+
+    def print(self, text):
+        self._console.print(text)
 
 
 @pytest.fixture

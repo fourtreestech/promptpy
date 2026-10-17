@@ -628,3 +628,30 @@ class TestDatePrompt:
 
         assert prompt.date("Enter a date", "%d/%m/%y") == datetime.date(2024, 3, 20)
         assert "Not a valid date" in capsys.readouterr().out
+
+
+class TestPasswordPrompt:
+    def test_returns_password(self, mock_console):
+        mock_console.register(["password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password() == "password1"
+
+    def test_confirms_password(self, mock_console):
+        mock_console.register(["password1", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(confirm=True) == "password1"
+
+    def test_rejects_unmatched_passwords(self, mock_console, capsys):
+        mock_console.register(["password1", "password2", "password1", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(confirm=True) == "password1"
+        assert "Passwords don't match" in capsys.readouterr().out
+
+    def test_toggle_visibility(self, mock_console):
+        mock_console.register(["v", "password1"])
+        prompt = Prompt(mock_console)
+
+        assert prompt.password(toggle_visibility=True) == "password1"

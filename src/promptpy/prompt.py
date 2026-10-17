@@ -119,6 +119,7 @@ class Prompt:
         commands: str = "",
         transform: CaseTransform = "none",
         default: str = "",
+        password: bool = False,
     ) -> str:
         """Display a command line prompt and return the user input.
 
@@ -162,12 +163,15 @@ class Prompt:
         prompt text. If the user input is empty, ``default`` is returned
         (and displayed) after ``transform`` is applied, but without being validated.
 
+        If `password`` is True user input will be hidden.
+
         Args:
             text: Text prompt to display
             validators: Validators to test user input (default=None)
             commands: String of single-letter commands to accept (default='')
             transform: Transformation to apply to input before returning (default='none')
             default: Value to return if no user input is supplied (default='')
+            password: Hide user input (default=False)
 
         Returns:
             Validated user input, a command, or the default value
@@ -193,7 +197,7 @@ class Prompt:
                 msg = prompt_text
 
             # Get input
-            user_input = self.console.input(f"{msg}: ")
+            user_input = self.console.input(f"{msg}: ", password=password)
 
             # Return default value
             if default and not user_input:
@@ -592,3 +596,56 @@ class Prompt:
             return datetime.datetime.strptime(date, format).date()
         except ValueError:
             return date
+
+    def password(self, show_input=False, toggle_visibility=False, confirm=False) -> str:
+        """Prompt for a password.
+
+        .. code-block::
+
+           prompt = Prompt()
+           date = prompt.password()
+           # Prompt is displayed as:
+           # Enter password:
+
+        If ``show_input`` is False (the default), the password will not show on screen
+        as it is typed.
+
+        If ``toggle_visibility`` is True, the user will have the option to toggle whether
+        input is shown by entering 'v' at the prompt.
+
+        If ``confirm`` is True, the user will be prompted to enter the password for
+        a second time. If the two passwords don't match an error will show and the
+        user will be returned to the first password entry.
+
+        Args:
+            show_input: Show user input as it is typed (default=False)
+            toggle_visibility: The user can switch input visibility on and off (default=False)
+            confirm: The user should be prompted to enter the password a second time (default=False)
+
+        Returns:
+            The password entered by the user.
+        """
+        while True:
+            # Get password
+            text: str = (
+                "Enter password ([bold]V[/] to toggle visibility)"
+                if toggle_visibility
+                else "Enter password"
+            )
+            pw = self.prompt(text, password=not show_input)
+
+            # Toggle visibility
+            if pw.lower() == "v":
+                show_input = not show_input
+
+            # Enter password for a second time
+            elif confirm:
+                pw2 = self.prompt("Confirm password", password=not show_input)
+                if pw2 == pw:
+                    break
+                else:
+                    self.console.print(escape("[red]Passwords don't match![/]"))
+            else:
+                break
+
+        return pw
