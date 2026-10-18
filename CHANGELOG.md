@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.0] - 2026-10-18
 
 ### Added
 
@@ -35,6 +35,8 @@
 ## [0.1.0] - 2025-03-13
 
 _Initial release._
+
+[0.3.0]: https://github.com/fourtreestech/promptpy/releases/tag/v0.3.0
 
 [0.2.0]: https://github.com/fourtreestech/promptpy/releases/tag/v0.2.0
 
